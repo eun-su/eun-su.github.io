@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
 const menuPages = [
@@ -28,20 +28,25 @@ export default function Header({ onNavigate }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(false);
 
-  const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";
 
   const overlayRef = useRef<HTMLButtonElement | null>(null);
-
   const menuPanelRef = useRef<HTMLElement | null>(null);
   const menuItemsRef = useRef<(HTMLButtonElement | null)[]>([]);
-
   const indexPanelRef = useRef<HTMLElement | null>(null);
 
   const topLineRef = useRef<HTMLSpanElement | null>(null);
   const middleLineRef = useRef<HTMLSpanElement | null>(null);
   const bottomLineRef = useRef<HTMLSpanElement | null>(null);
+
+  const triggerPageTransition = (href: string) => {
+    window.dispatchEvent(
+      new CustomEvent("app:navigate", {
+        detail: { href },
+      })
+    );
+  };
 
   const closeAll = () => {
     setMenuOpen(false);
@@ -55,7 +60,7 @@ export default function Header({ onNavigate }: HeaderProps) {
       if (isHome) {
         onNavigate?.(sectionId);
       } else {
-        router.push(`/#${sectionId}`);
+        triggerPageTransition(`/#${sectionId}`);
       }
     }, 180);
   };
@@ -64,7 +69,7 @@ export default function Header({ onNavigate }: HeaderProps) {
     closeAll();
 
     window.setTimeout(() => {
-      router.push(href);
+      triggerPageTransition(href);
     }, 180);
   };
 
@@ -304,7 +309,13 @@ export default function Header({ onNavigate }: HeaderProps) {
 
             <button
               type="button"
-              onClick={() => router.push("/")}
+              onClick={() => {
+                if (isHome) {
+                  handleSectionClick("hero");
+                } else {
+                  triggerPageTransition("/");
+                }
+              }}
               className="absolute left-1/2 -translate-x-1/2 text-sm uppercase tracking-[0.28em] md:text-base"
             >
               EUNSU
@@ -325,7 +336,7 @@ export default function Header({ onNavigate }: HeaderProps) {
             ) : (
               <button
                 type="button"
-                onClick={() => router.push("/")}
+                onClick={() => triggerPageTransition("/")}
                 className="text-xs uppercase tracking-[0.18em] md:text-sm"
               >
                 Home
