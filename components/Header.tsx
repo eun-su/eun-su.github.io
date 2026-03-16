@@ -1,9 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 
-const sections = [
+const menuPages = [
+  { href: "/design", label: "Design Works" },
+  { href: "/study", label: "Study Notes" },
+  { href: "/issues", label: "Issue Board" },
+  { href: "/favorites", label: "Favorites" },
+];
+
+const indexSections = [
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
   { id: "work", label: "Work" },
@@ -19,6 +27,10 @@ type HeaderProps = {
 export default function Header({ onNavigate }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   const overlayRef = useRef<HTMLButtonElement | null>(null);
 
@@ -40,7 +52,19 @@ export default function Header({ onNavigate }: HeaderProps) {
     closeAll();
 
     window.setTimeout(() => {
-      onNavigate?.(sectionId);
+      if (isHome) {
+        onNavigate?.(sectionId);
+      } else {
+        router.push(`/#${sectionId}`);
+      }
+    }, 180);
+  };
+
+  const handlePageClick = (href: string) => {
+    closeAll();
+
+    window.setTimeout(() => {
+      router.push(href);
     }, 180);
   };
 
@@ -280,23 +304,33 @@ export default function Header({ onNavigate }: HeaderProps) {
 
             <button
               type="button"
-              onClick={() => handleSectionClick("hero")}
+              onClick={() => router.push("/")}
               className="absolute left-1/2 -translate-x-1/2 text-sm uppercase tracking-[0.28em] md:text-base"
             >
               EUNSU
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setIndexOpen((prev) => !prev);
-                setMenuOpen(false);
-              }}
-              className="text-xs uppercase tracking-[0.18em] md:text-sm"
-              aria-label="Open section index"
-            >
-              {indexOpen ? "Close" : "Index"}
-            </button>
+            {isHome ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setIndexOpen((prev) => !prev);
+                  setMenuOpen(false);
+                }}
+                className="text-xs uppercase tracking-[0.18em] md:text-sm"
+                aria-label="Open section index"
+              >
+                {indexOpen ? "Close" : "Index"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className="text-xs uppercase tracking-[0.18em] md:text-sm"
+              >
+                Home
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -326,44 +360,46 @@ export default function Header({ onNavigate }: HeaderProps) {
         </div>
 
         <nav className="mt-8 flex flex-col gap-5">
-          {sections.map((section, index) => (
+          {menuPages.map((page, index) => (
             <button
-              key={section.id}
+              key={page.href}
               ref={(el) => {
                 menuItemsRef.current[index] = el;
               }}
               type="button"
-              onClick={() => handleSectionClick(section.id)}
+              onClick={() => handlePageClick(page.href)}
               className="text-left text-2xl tracking-[-0.03em] opacity-0 md:text-4xl"
             >
-              {section.label}
+              {page.label}
             </button>
           ))}
         </nav>
       </aside>
 
-      <aside
-        ref={indexPanelRef}
-        className="fixed top-[84px] right-4 z-50 w-[220px] rounded-3xl border border-black/10 bg-white/85 p-4 shadow-xl opacity-0 backdrop-blur-md md:right-8 md:p-5"
-        style={{ pointerEvents: "none" }}
-      >
-        <div className="mb-3 border-b border-black/10 pb-3">
-          <p className="text-xs uppercase tracking-[0.18em]">Sections</p>
-        </div>
+      {isHome && (
+        <aside
+          ref={indexPanelRef}
+          className="fixed top-[84px] right-4 z-50 w-[220px] rounded-3xl border border-black/10 bg-white/85 p-4 shadow-xl opacity-0 backdrop-blur-md md:right-8 md:p-5"
+          style={{ pointerEvents: "none" }}
+        >
+          <div className="mb-3 border-b border-black/10 pb-3">
+            <p className="text-xs uppercase tracking-[0.18em]">Sections</p>
+          </div>
 
-        <nav className="flex flex-col gap-2">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={() => handleSectionClick(section.id)}
-              className="rounded-2xl px-3 py-2 text-left text-sm uppercase tracking-[0.14em] transition hover:bg-black hover:text-white"
-            >
-              {section.label}
-            </button>
-          ))}
-        </nav>
-      </aside>
+          <nav className="flex flex-col gap-2">
+            {indexSections.map((section) => (
+              <button
+                key={section.id}
+                type="button"
+                onClick={() => handleSectionClick(section.id)}
+                className="rounded-2xl px-3 py-2 text-left text-sm uppercase tracking-[0.14em] transition hover:bg-black hover:text-white"
+              >
+                {section.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+      )}
     </>
   );
 }

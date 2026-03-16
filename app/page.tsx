@@ -107,7 +107,6 @@ export default function Home() {
         currentIndexRef.current = nextIndex;
         setCurrentIndex(nextIndex);
         isAnimatingRef.current = false;
-
         resetWheelAccumulator();
         lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
       },
@@ -117,7 +116,6 @@ export default function Home() {
   const handleNavigateById = (sectionId: string) => {
     const nextIndex = sections.findIndex((section) => section.id === sectionId);
     if (nextIndex === -1) return;
-
     goToSection(nextIndex);
   };
 
@@ -225,10 +223,10 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative">
+    <main className="relative h-[100dvh] overflow-hidden">
       <Header onNavigate={handleNavigateById} />
 
-      <div ref={containerRef} id="top" className="h-screen overflow-y-auto">
+      <div ref={containerRef} id="top" className="h-[100dvh] overflow-y-auto">
         {sections.map((section, index) => (
           <section
             key={section.id}
@@ -236,7 +234,7 @@ export default function Home() {
             ref={(el) => {
               sectionRefs.current[index] = el;
             }}
-            className={`relative flex min-h-screen items-end px-6 py-10 md:px-10 md:py-14 ${section.bg}`}
+            className={`relative flex min-h-[100dvh] items-end px-6 py-10 md:px-10 md:py-14 ${section.bg}`}
           >
             <div className="w-full">
               <div className="mb-6 md:mb-8">
