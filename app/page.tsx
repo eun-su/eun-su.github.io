@@ -3,67 +3,34 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Header from "@/components/Header";
-
-const sections = [
-  {
-    id: "hero",
-    label: "Hero",
-    bg: "bg-neutral-100 text-black",
-    title: "Designing calm and intentional digital spaces.",
-    desc: "웹 퍼블리싱과 프론트엔드 구현을 바탕으로, 사람의 흐름과 감각을 고려한 화면을 만듭니다.",
-  },
-  {
-    id: "about",
-    label: "About",
-    bg: "bg-neutral-200 text-black",
-    title: "I like building structured and thoughtful interfaces.",
-    desc: "공간을 설계하고 구축하는 것을 좋아합니다. 보기 좋은 화면을 넘어서, 사용자의 시선과 경험이 자연스럽게 이어지는 웹을 지향합니다.",
-  },
-  {
-    id: "work",
-    label: "Work",
-    bg: "bg-neutral-300 text-black",
-    title: "Selected work across publishing, renewal, and e-commerce.",
-    desc: "홈페이지 구축, 리뉴얼, 쇼핑몰 튜닝, 기능 개발, 검색 연동, 파트너 플랫폼 연결 등 다양한 실무를 경험했습니다.",
-  },
-  {
-    id: "skills",
-    label: "Skills",
-    bg: "bg-neutral-400 text-black",
-    title: "Frontend skills with a publisher’s eye for detail.",
-    desc: "HTML, CSS, JavaScript, React, UI 구현, 반응형 작업, 인터랙션 설계에 강점을 가지고 있습니다.",
-  },
-  {
-    id: "philosophy",
-    label: "Philosophy",
-    bg: "bg-neutral-500 text-white",
-    title: "Less noise, more rhythm, more clarity.",
-    desc: "강한 인상을 주되 과하지 않은 구성, 넓은 여백, 절제된 움직임, 그리고 읽기 좋은 구조를 중요하게 생각합니다.",
-  },
-  {
-    id: "contact",
-    label: "Contact",
-    bg: "bg-neutral-900 text-white",
-    title: "Let’s build something meaningful.",
-    desc: "차분하지만 인상 깊은 화면, 구조가 분명한 웹 경험, 그리고 더 나은 인터랙션을 함께 만들고 싶습니다.",
-  },
-];
+import { usePageTheme } from "@/hooks/usePageTheme";
+import { homeProjectCards, homeSections } from "@/data/homeSections";
+import HomeSectionShell from "@/components/home/HomeSectionShell";
+import HomeSectionRenderer from "@/components/home/HomeSectionRenderer";
+import styles from "./HomePage.module.scss";
 
 const WHEEL_THRESHOLD = 45;
 const WHEEL_IDLE_RESET_MS = 160;
 const POST_ANIMATION_COOLDOWN_MS = 120;
 
 export default function Home() {
+  usePageTheme("home");
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-  const currentIndexRef = useRef(0);
+  const projectTrackRef = useRef<HTMLDivElement | null>(null);
+
+  const currentSectionRef = useRef(0);
+  const currentProjectCardRef = useRef(0);
+
   const isAnimatingRef = useRef(false);
   const touchStartYRef = useRef<number | null>(null);
   const wheelAccumulatorRef = useRef(0);
   const wheelResetTimerRef = useRef<number | null>(null);
   const lockUntilRef = useRef(0);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [currentProjectCard, setCurrentProjectCard] = useState(0);
 
   const resetWheelAccumulator = () => {
     wheelAccumulatorRef.current = 0;
@@ -85,14 +52,46 @@ export default function Home() {
     }, WHEEL_IDLE_RESET_MS);
   };
 
+  const triggerPageTransition = (href?: string) => {
+    if (!href) return;
+
+    window.dispatchEvent(
+      new CustomEvent("app:navigate", {
+        detail: { href },
+      })
+    );
+  };
+
+  const animateProjectCards = (nextCardIndex: number) => {
+    const track = projectTrackRef.current;
+    if (!track) return;
+
+    const xPercent = -(nextCardIndex * 100);
+
+    isAnimatingRef.current = true;
+    resetWheelAccumulator();
+
+    gsap.to(track, {
+      xPercent,
+      duration: 0.85,
+      ease: "power3.inOut",
+      onComplete: () => {
+        currentProjectCardRef.current = nextCardIndex;
+        setCurrentProjectCard(nextCardIndex);
+        isAnimatingRef.current = false;
+        lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
+      },
+    });
+  };
+
   const goToSection = (nextIndex: number) => {
     const container = containerRef.current;
     const targetSection = sectionRefs.current[nextIndex];
 
     if (!container || !targetSection) return;
-    if (nextIndex < 0 || nextIndex >= sections.length) return;
+    if (nextIndex < 0 || nextIndex >= homeSections.length) return;
     if (isAnimatingRef.current) return;
-    if (nextIndex === currentIndexRef.current) return;
+    if (nextIndex === currentSectionRef.current) return;
 
     isAnimatingRef.current = true;
     resetWheelAccumulator();
@@ -104,18 +103,75 @@ export default function Home() {
       duration: 0.95,
       ease: "power3.inOut",
       onComplete: () => {
-        currentIndexRef.current = nextIndex;
-        setCurrentIndex(nextIndex);
+        currentSectionRef.current = nextIndex;
+        setCurrentSection(nextIndex);
         isAnimatingRef.current = false;
-        resetWheelAccumulator();
         lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
       },
     });
   };
 
+  const handleForward = () => {
+    const currentSectionIndex = currentSectionRef.current;
+    const currentSectionData = homeSections[currentSectionIndex];
+
+    if (currentSectionData.id === "project-board") {
+      if (currentProjectCardRef.current < homeProjectCards.length - 1) {
+        animateProjectCards(currentProjectCardRef.current + 1);
+        return;
+      }
+    }
+
+    goToSection(currentSectionIndex + 1);
+  };
+
+  const handleBackward = () => {
+    const currentSectionIndex = currentSectionRef.current;
+    const currentSectionData = homeSections[currentSectionIndex];
+
+    if (currentSectionData.id === "project-board") {
+      if (currentProjectCardRef.current > 0) {
+        animateProjectCards(currentProjectCardRef.current - 1);
+        return;
+      }
+    }
+
+    if (
+      currentSectionIndex === 2 &&
+      homeSections[currentSectionIndex - 1]?.id === "project-board"
+    ) {
+      goToSection(1);
+
+      window.setTimeout(() => {
+        currentProjectCardRef.current = homeProjectCards.length - 1;
+        setCurrentProjectCard(homeProjectCards.length - 1);
+
+        if (projectTrackRef.current) {
+          gsap.set(projectTrackRef.current, {
+            xPercent: -((homeProjectCards.length - 1) * 100),
+          });
+        }
+      }, 980);
+
+      return;
+    }
+
+    goToSection(currentSectionIndex - 1);
+  };
+
   const handleNavigateById = (sectionId: string) => {
-    const nextIndex = sections.findIndex((section) => section.id === sectionId);
+    const nextIndex = homeSections.findIndex((section) => section.id === sectionId);
     if (nextIndex === -1) return;
+
+    if (sectionId === "project-board") {
+      currentProjectCardRef.current = 0;
+      setCurrentProjectCard(0);
+
+      if (projectTrackRef.current) {
+        gsap.set(projectTrackRef.current, { xPercent: 0 });
+      }
+    }
+
     goToSection(nextIndex);
   };
 
@@ -145,17 +201,15 @@ export default function Home() {
       }
 
       const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
-      const nextIndex = currentIndexRef.current + direction;
-
       resetWheelAccumulator();
 
-      if (nextIndex < 0 || nextIndex >= sections.length) {
-        e.preventDefault();
-        return;
-      }
-
       e.preventDefault();
-      goToSection(nextIndex);
+
+      if (direction > 0) {
+        handleForward();
+      } else {
+        handleBackward();
+      }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -165,22 +219,22 @@ export default function Home() {
 
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
-        goToSection(currentIndexRef.current + 1);
+        handleForward();
       }
 
       if (e.key === "ArrowUp" || e.key === "PageUp") {
         e.preventDefault();
-        goToSection(currentIndexRef.current - 1);
+        handleBackward();
       }
 
       if (e.key === "Home") {
         e.preventDefault();
-        goToSection(0);
+        handleNavigateById("hero");
       }
 
       if (e.key === "End") {
         e.preventDefault();
-        goToSection(sections.length - 1);
+        goToSection(homeSections.length - 1);
       }
     };
 
@@ -199,10 +253,11 @@ export default function Home() {
 
       if (Math.abs(deltaY) < 50) return;
 
-      const direction = deltaY > 0 ? 1 : -1;
-      const nextIndex = currentIndexRef.current + direction;
-
-      goToSection(nextIndex);
+      if (deltaY > 0) {
+        handleForward();
+      } else {
+        handleBackward();
+      }
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
@@ -223,48 +278,46 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative h-[100dvh] overflow-hidden">
+    <main className={styles.main}>
       <Header onNavigate={handleNavigateById} />
 
-      <div ref={containerRef} id="top" className="h-[100dvh] overflow-y-auto">
-        {sections.map((section, index) => (
-          <section
-            key={section.id}
-            id={section.id}
-            ref={(el) => {
-              sectionRefs.current[index] = el;
-            }}
-            className={`relative flex min-h-[100dvh] items-end px-6 py-10 md:px-10 md:py-14 ${section.bg}`}
-          >
-            <div className="w-full">
-              <div className="mb-6 md:mb-8">
-                <p className="text-xs uppercase tracking-[0.22em] opacity-70 md:text-sm">
-                  {section.label}
-                </p>
-              </div>
+      <div ref={containerRef} id="top" className={styles.container}>
+        {homeSections.map((section, index) => {
+          const isProjectSection = section.id === "project-board";
 
-              <div className="max-w-6xl">
-                <h2 className="max-w-5xl text-[40px] leading-[0.95] tracking-[-0.04em] md:text-[96px]">
-                  {section.title}
-                </h2>
-
-                <p className="mt-6 max-w-2xl text-base leading-[1.7] opacity-80 md:mt-8 md:text-xl">
-                  {section.desc}
-                </p>
-              </div>
-
-              <div className="absolute bottom-8 right-6 text-xs uppercase tracking-[0.18em] opacity-40 md:right-10">
-                {String(index + 1).padStart(2, "0")} /{" "}
-                {String(sections.length).padStart(2, "0")}
-              </div>
-            </div>
-          </section>
-        ))}
+          return (
+            <HomeSectionShell
+              key={section.id}
+              id={section.id}
+              eyebrow={section.eyebrow}
+              sectionNumber={`${String(index + 1).padStart(2, "0")} / ${String(
+                homeSections.length
+              ).padStart(2, "0")}`}
+              className={isProjectSection ? styles.sectionProject : ""}
+              sectionRef={(el) => {
+                sectionRefs.current[index] = el;
+              }}
+            >
+              <HomeSectionRenderer
+                section={section}
+                cards={homeProjectCards}
+                currentProjectCard={currentProjectCard}
+                projectTrackRef={projectTrackRef}
+                onCtaClick={triggerPageTransition}
+              />
+            </HomeSectionShell>
+          );
+        })}
       </div>
 
-      <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-xs uppercase tracking-[0.18em] backdrop-blur-md">
-        {String(currentIndex + 1).padStart(2, "0")} /{" "}
-        {String(sections.length).padStart(2, "0")}
+      <div className={styles.progressPill}>
+        {currentSection === 1
+          ? `${String(currentSection + 1).padStart(2, "0")}-${String(
+              currentProjectCard + 1
+            ).padStart(2, "0")}`
+          : `${String(currentSection + 1).padStart(2, "0")} / ${String(
+              homeSections.length
+            ).padStart(2, "0")}`}
       </div>
     </main>
   );

@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
+import styles from "./Header.module.scss";
 
 const menuPages = [
+  { href: "/intro", label: "Intro" },
   { href: "/design", label: "Design Works" },
   { href: "/study", label: "Study Notes" },
   { href: "/issues", label: "Issue Board" },
@@ -12,11 +14,11 @@ const menuPages = [
 ];
 
 const indexSections = [
-  { id: "hero", label: "Hero" },
-  { id: "about", label: "About" },
-  { id: "work", label: "Work" },
-  { id: "skills", label: "Skills" },
-  { id: "philosophy", label: "Philosophy" },
+  { id: "hero", label: "Intro" },
+  { id: "project-board", label: "Board" },
+  { id: "project-renewal", label: "Renewal" },
+  { id: "build-tuning", label: "Build" },
+  { id: "design-works", label: "Design" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -287,22 +289,22 @@ export default function Header({ onNavigate }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 z-50 w-full">
-        <div className="px-4 pt-4 md:px-8 md:pt-6">
-          <div className="relative flex items-center justify-between rounded-full border border-black/10 bg-white/70 px-4 py-3 backdrop-blur-md md:px-6">
+      <header className={styles.header}>
+        <div className={styles.inner}>
+          <div className={styles.bar}>
             <button
               type="button"
               onClick={() => {
                 setMenuOpen((prev) => !prev);
                 setIndexOpen(false);
               }}
-              className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] md:text-sm"
+              className={styles.menuButton}
               aria-label="Open menu"
             >
-              <span className="relative flex h-4 w-5 flex-col justify-between">
-                <span ref={topLineRef} className="block h-px w-5 bg-black" />
-                <span ref={middleLineRef} className="block h-px w-5 bg-black" />
-                <span ref={bottomLineRef} className="block h-px w-5 bg-black" />
+              <span className={styles.hamburger}>
+                <span ref={topLineRef} className={styles.hamburgerLine} />
+                <span ref={middleLineRef} className={styles.hamburgerLine} />
+                <span ref={bottomLineRef} className={styles.hamburgerLine} />
               </span>
               <span>{menuOpen ? "Close" : "Menu"}</span>
             </button>
@@ -316,7 +318,7 @@ export default function Header({ onNavigate }: HeaderProps) {
                   triggerPageTransition("/");
                 }
               }}
-              className="absolute left-1/2 -translate-x-1/2 text-sm uppercase tracking-[0.28em] md:text-base"
+              className={styles.logo}
             >
               EUNSU
             </button>
@@ -328,7 +330,7 @@ export default function Header({ onNavigate }: HeaderProps) {
                   setIndexOpen((prev) => !prev);
                   setMenuOpen(false);
                 }}
-                className="text-xs uppercase tracking-[0.18em] md:text-sm"
+                className={styles.sideButton}
                 aria-label="Open section index"
               >
                 {indexOpen ? "Close" : "Index"}
@@ -337,7 +339,7 @@ export default function Header({ onNavigate }: HeaderProps) {
               <button
                 type="button"
                 onClick={() => triggerPageTransition("/")}
-                className="text-xs uppercase tracking-[0.18em] md:text-sm"
+                className={styles.sideButton}
               >
                 Home
               </button>
@@ -350,27 +352,27 @@ export default function Header({ onNavigate }: HeaderProps) {
         ref={overlayRef}
         type="button"
         onClick={closeAll}
-        className="fixed inset-0 z-40 bg-black/20 opacity-0 pointer-events-none backdrop-blur-[2px]"
+        className={styles.overlay}
         aria-label="Close overlay"
       />
 
       <aside
         ref={menuPanelRef}
-        className="fixed top-0 left-0 z-50 h-screen w-[82%] max-w-sm -translate-x-full bg-[#f5f1ea] p-6 shadow-2xl md:p-8"
+        className={styles.menuPanel}
         style={{ pointerEvents: "none" }}
       >
-        <div className="flex items-center justify-between border-b border-black/10 pb-4">
-          <p className="text-xs uppercase tracking-[0.18em]">Menu</p>
+        <div className={styles.menuPanelTop}>
+          <p className={styles.menuPanelTitle}>Menu</p>
           <button
             type="button"
             onClick={() => setMenuOpen(false)}
-            className="text-xs uppercase tracking-[0.18em]"
+            className={styles.menuPanelClose}
           >
             Close
           </button>
         </div>
 
-        <nav className="mt-8 flex flex-col gap-5">
+        <nav className={styles.menuNav}>
           {menuPages.map((page, index) => (
             <button
               key={page.href}
@@ -379,7 +381,7 @@ export default function Header({ onNavigate }: HeaderProps) {
               }}
               type="button"
               onClick={() => handlePageClick(page.href)}
-              className="text-left text-2xl tracking-[-0.03em] opacity-0 md:text-4xl"
+              className={styles.menuItem}
             >
               {page.label}
             </button>
@@ -390,20 +392,20 @@ export default function Header({ onNavigate }: HeaderProps) {
       {isHome && (
         <aside
           ref={indexPanelRef}
-          className="fixed top-[84px] right-4 z-50 w-[220px] rounded-3xl border border-black/10 bg-white/85 p-4 shadow-xl opacity-0 backdrop-blur-md md:right-8 md:p-5"
+          className={styles.indexPanel}
           style={{ pointerEvents: "none" }}
         >
-          <div className="mb-3 border-b border-black/10 pb-3">
-            <p className="text-xs uppercase tracking-[0.18em]">Sections</p>
+          <div className={styles.indexPanelHead}>
+            <p className={styles.indexPanelTitle}>Sections</p>
           </div>
 
-          <nav className="flex flex-col gap-2">
+          <nav className={styles.indexNav}>
             {indexSections.map((section) => (
               <button
                 key={section.id}
                 type="button"
                 onClick={() => handleSectionClick(section.id)}
-                className="rounded-2xl px-3 py-2 text-left text-sm uppercase tracking-[0.14em] transition hover:bg-black hover:text-white"
+                className={styles.indexItem}
               >
                 {section.label}
               </button>

@@ -1,0 +1,280 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+.inner {
+  padding: 1rem 1rem 0;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem 2rem 0;
+  }
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 3.5rem;
+  padding: 0.875rem 1rem;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  @media (min-width: 768px) {
+    min-height: 4rem;
+    padding: 0.9rem 1.5rem;
+  }
+}
+
+.menuButton,
+.sideButton,
+.logo,
+.menuPanelClose,
+.menuItem,
+.indexItem {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.menuButton,
+.sideButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  @media (min-width: 768px) {
+    font-size: 0.82rem;
+  }
+}
+
+.logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+.hamburger {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 1.25rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.hamburgerLine {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #000;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+
+  border: 0;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.menuPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+
+  width: min(82vw, 24rem);
+  height: 100dvh;
+  padding: 1.5rem;
+
+  background: #f5f1ea;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  transform: translateX(-100%);
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+
+.menuPanelTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.menuPanelTitle,
+.menuPanelClose {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.menuNav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.menuItem {
+  text-align: left;
+  opacity: 0;
+
+  font-size: clamp(1.65rem, 4vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.indexPanel {
+  position: fixed;
+  top: 5.25rem;
+  right: 1rem;
+  z-index: 50;
+
+  width: min(14rem, calc(100vw - 2rem));
+  padding: 1rem;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  @media (min-width: 768px) {
+    top: 5.75rem;
+    right: 2rem;
+    padding: 1.25rem;
+  }
+}
+
+.indexPanelHead {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.indexPanelTitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.indexNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.indexItem {
+  width: 100%;
+  padding: 0.72rem 0.9rem;
+  border-radius: 1rem;
+  text-align: left;
+
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.indexItem:hover {
+  background: #000;
+  color: #fff;
+}
+
+.indexItem:active {
+  transform: scale(0.98);
+}
+
+.menuButton:focus-visible,
+.sideButton:focus-visible,
+.logo:focus-visible,
+.menuPanelClose:focus-visible,
+.menuItem:focus-visible,
+.indexItem:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 4px;
+}
+
+@media (max-width: 480px) {
+  .inner {
+    padding: 0.875rem 0.875rem 0;
+  }
+
+  .bar {
+    min-height: 3.25rem;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .menuButton,
+  .sideButton {
+    gap: 0.55rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+  }
+
+  .logo {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+  }
+
+  .menuPanel {
+    width: min(88vw, 22rem);
+    padding: 1.25rem;
+  }
+
+  .indexPanel {
+    top: 4.85rem;
+    right: 0.875rem;
+    width: min(13rem, calc(100vw - 1.75rem));
+  }
+}
