@@ -1,266 +1,34 @@
 @import "tailwindcss";
 
-/* =========================
-   1. Root: Global Base Tokens
-   ========================= */
 :root {
-  color-scheme: light;
-
-  /* layout */
-  --header-height: 72px;
-  --radius-pill: 9999px;
-  --radius-card: 24px;
-
-  /* motion */
-  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-fast: 0.22s;
-  --duration-normal: 0.4s;
-  --duration-slow: 0.7s;
-
-  /* typography */
-  --font-body: "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif;
-  --font-display: "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif;
-
-  /* neutral base */
-  --color-white: #ffffff;
-  --color-black: #000000;
-
-  --neutral-strong: #111111;
-  --neutral-body: #2a2a2a;
-  --neutral-muted: #5f6472;
-  --neutral-soft: #8a90a2;
-  --neutral-line: rgba(17, 17, 17, 0.1);
-  --neutral-line-strong: rgba(17, 17, 17, 0.16);
-
-  --surface-glass-light: rgba(255, 255, 255, 0.72);
-  --surface-glass-strong: rgba(255, 255, 255, 0.84);
-  --surface-overlay: rgba(12, 14, 24, 0.18);
-
-  /* default page tokens (fallback) */
-  --page-bg: #eeeeee;
-  --page-text: #111111;
-  --page-text-muted: #5d6270;
-  --page-point: #060ae5;
-  --page-point-strong: #011149;
-  --page-sub: #bfc7d9;
-  --page-card: rgba(255, 255, 255, 0.66);
-  --page-line: rgba(1, 17, 73, 0.12);
-
-  /* loader */
-  --loader-bg: #eeeeee;
-  --loader-fill: #060ae5;
-  --loader-text: #011149;
-  --loader-track: rgba(1, 17, 73, 0.16);
-
-  /* common ui */
-  --pill-bg: rgba(255, 255, 255, 0.74);
-  --pill-border: rgba(17, 17, 17, 0.1);
-  --button-bg: #111111;
-  --button-text: #ffffff;
-  --button-border: rgba(17, 17, 17, 0.12);
-
-  /* shadows */
-  --shadow-soft: 0 12px 30px rgba(16, 18, 33, 0.08);
-  --shadow-medium: 0 20px 40px rgba(16, 18, 33, 0.12);
-  --shadow-strong: 0 24px 60px rgba(16, 18, 33, 0.18);
+  --background: #f8f9fc;
+  --foreground: #1e2433;
 }
 
-/* =========================
-   2. Page Theme Tokens
-   body[data-page="..."] 기준
-   ========================= */
-
-/* Home */
-body[data-page="home"] {
-  --page-bg: #f8f9fc;
-  --page-text: #1e2433;
-  --page-text-muted: #5e687e;
-  --page-point: #2d3d59;
-  --page-point-strong: #011149;
-  --page-sub: #c4cada;
-  --page-card: rgba(255, 255, 255, 0.78);
-  --page-line: rgba(45, 61, 89, 0.12);
-
-  --loader-bg: #f8f9fc;
-  --loader-fill: #2d3d59;
-  --loader-text: #1e2433;
-  --loader-track: rgba(45, 61, 89, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.84);
-  --pill-border: rgba(45, 61, 89, 0.1);
-  --button-bg: #2d3d59;
-  --button-text: #ffffff;
-  --button-border: rgba(45, 61, 89, 0.14);
-}
-
-/* Intro */
-body[data-page="intro"] {
-  --page-bg: #f8f9fc;
-  --page-text: #1f2a40;
-  --page-text-muted: #5f6b84;
-  --page-point: #2d3d59;
-  --page-point-strong: #1c2740;
-  --page-sub: #b6bfd3;
-  --page-card: rgba(255, 255, 255, 0.7);
-  --page-line: rgba(45, 61, 89, 0.12);
-
-  --loader-bg: #f3f3f3;
-  --loader-fill: #2d3d59;
-  --loader-text: #1f2a40;
-  --loader-track: rgba(45, 61, 89, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.78);
-  --pill-border: rgba(45, 61, 89, 0.12);
-  --button-bg: #2d3d59;
-  --button-text: #ffffff;
-  --button-border: rgba(45, 61, 89, 0.16);
-}
-
-/* Design */
-body[data-page="design"] {
-  --page-bg: #f3ecf7;
-  --page-text: #281a22;
-  --page-text-muted: #5a4450;
-  --page-point: #8a0324;
-  --page-point-strong: #5f0018;
-  --page-sub: #b6b7c7;
-  --page-card: rgba(255, 255, 255, 0.56);
-  --page-line: rgba(138, 3, 36, 0.12);
-
-  --loader-bg: #f3ecf7;
-  --loader-fill: #8a0324;
-  --loader-text: #4d1022;
-  --loader-track: rgba(138, 3, 36, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.74);
-  --pill-border: rgba(138, 3, 36, 0.1);
-  --button-bg: #8a0324;
-  --button-text: #ffffff;
-  --button-border: rgba(138, 3, 36, 0.16);
-}
-
-/* Study */
-body[data-page="study"] {
-  --page-bg: #fcfcfd;
-  --page-text: #171717;
-  --page-text-muted: #5f5f68;
-  --page-point: #8e0a22;
-  --page-point-strong: #650014;
-  --page-sub: #c6c8d1;
-  --page-card: rgba(255, 255, 255, 0.76);
-  --page-line: rgba(142, 10, 34, 0.12);
-
-  --loader-bg: #fcfcfd;
-  --loader-fill: #8e0a22;
-  --loader-text: #4a0e1d;
-  --loader-track: rgba(142, 10, 34, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.8);
-  --pill-border: rgba(142, 10, 34, 0.1);
-  --button-bg: #8e0a22;
-  --button-text: #ffffff;
-  --button-border: rgba(142, 10, 34, 0.16);
-}
-
-/* Issues */
-body[data-page="issues"] {
-  --page-bg: #f4f6fb;
-  --page-text: #18203f;
-  --page-text-muted: #5d6788;
-  --page-point: #1d2a72;
-  --page-point-strong: #111c55;
-  --page-sub: #aeb8dd;
-  --page-card: rgba(255, 255, 255, 0.72);
-  --page-line: rgba(29, 42, 114, 0.12);
-
-  --loader-bg: #f4f6fb;
-  --loader-fill: #1d2a72;
-  --loader-text: #17204d;
-  --loader-track: rgba(29, 42, 114, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.8);
-  --pill-border: rgba(29, 42, 114, 0.1);
-  --button-bg: #1d2a72;
-  --button-text: #ffffff;
-  --button-border: rgba(29, 42, 114, 0.16);
-}
-
-/* Favorites / Contact */
-body[data-page="favorites"] {
-  --page-bg: #f7f6fa;
-  --page-text: #2b2437;
-  --page-text-muted: #655d79;
-  --page-point: #4b3f72;
-  --page-point-strong: #31264f;
-  --page-sub: #b8b0cf;
-  --page-card: rgba(255, 255, 255, 0.7);
-  --page-line: rgba(75, 63, 114, 0.12);
-
-  --loader-bg: #f7f6fa;
-  --loader-fill: #4b3f72;
-  --loader-text: #2d244b;
-  --loader-track: rgba(75, 63, 114, 0.14);
-
-  --pill-bg: rgba(255, 255, 255, 0.8);
-  --pill-border: rgba(75, 63, 114, 0.1);
-  --button-bg: #4b3f72;
-  --button-text: #ffffff;
-  --button-border: rgba(75, 63, 114, 0.16);
-}
-
-/* =========================
-   3. Global Reset / Base
-   ========================= */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  font-family: var(--font-body);
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  scroll-behavior: auto;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 html,
 body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+  width: 100%;
   min-height: 100%;
 }
 
 body {
-  background: var(--page-bg);
-  color: var(--page-text);
-  font-family: var(--font-body);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition:
-    background-color var(--duration-normal) var(--ease-standard),
-    color var(--duration-normal) var(--ease-standard);
+  overflow-x: hidden;
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  color: inherit;
+* {
+  box-sizing: border-box;
 }
 
 a {
@@ -268,58 +36,111 @@ a {
   text-decoration: none;
 }
 
-::selection {
-  background: color-mix(in srgb, var(--page-point) 18%, white);
-  color: var(--page-text);
+button {
+  font: inherit;
 }
 
-/* =========================
-   4. Global Utility Tokens
-   ========================= */
-.page-shell {
-  background: var(--page-bg);
-  color: var(--page-text);
+/* 페이지별 컬러 토큰 */
+body[data-page="home"] {
+  --page-bg: #f8f9fc;
+  --page-text: #1e2433;
+  --page-text-muted: #5e687e;
+  --page-point: #1c2f6c;
+  --page-point-strong: #14214b;
+  --page-card: rgba(255, 255, 255, 0.82);
+  --page-line: rgba(28, 47, 108, 0.12);
+  --button-bg: #1c2f6c;
+  --button-text: #ffffff;
+  --button-border: rgba(28, 47, 108, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.88);
+  --pill-border: rgba(28, 47, 108, 0.1);
 }
 
-.glass-panel {
-  background: var(--page-card);
-  border: 1px solid var(--page-line);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+body[data-page="intro"] {
+  --page-bg: #f7f7f7;
+  --page-text: #24314d;
+  --page-text-muted: #5a6377;
+  --page-point: #33456b;
+  --page-point-strong: #24314d;
+  --page-card: rgba(255, 255, 255, 0.84);
+  --page-line: rgba(51, 69, 107, 0.12);
+  --button-bg: #33456b;
+  --button-text: #ffffff;
+  --button-border: rgba(51, 69, 107, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.88);
+  --pill-border: rgba(51, 69, 107, 0.1);
 }
 
-.pill-ui {
-  background: var(--pill-bg);
-  border: 1px solid var(--pill-border);
-  border-radius: var(--radius-pill);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+body[data-page="design"] {
+  --page-bg: #f4eff4;
+  --page-text: #5b1025;
+  --page-text-muted: #7a4d5c;
+  --page-point: #a1002b;
+  --page-point-strong: #72001f;
+  --page-card: rgba(255, 255, 255, 0.82);
+  --page-line: rgba(161, 0, 43, 0.12);
+  --button-bg: #a1002b;
+  --button-text: #ffffff;
+  --button-border: rgba(161, 0, 43, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.88);
+  --pill-border: rgba(161, 0, 43, 0.1);
 }
 
-.point-text {
-  color: var(--page-point);
+body[data-page="study"] {
+  --page-bg: #fcfcfd;
+  --page-text: #5e0e21;
+  --page-text-muted: #7a5360;
+  --page-point: #960c24;
+  --page-point-strong: #690818;
+  --page-card: rgba(255, 255, 255, 0.84);
+  --page-line: rgba(150, 12, 36, 0.12);
+  --button-bg: #960c24;
+  --button-text: #ffffff;
+  --button-border: rgba(150, 12, 36, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.9);
+  --pill-border: rgba(150, 12, 36, 0.1);
 }
 
-.point-bg {
-  background: var(--page-point);
-  color: var(--button-text);
+body[data-page="issues"] {
+  --page-bg: #f4f6fb;
+  --page-text: #1c2750;
+  --page-text-muted: #5f6a8b;
+  --page-point: #0d1f73;
+  --page-point-strong: #09154f;
+  --page-card: rgba(255, 255, 255, 0.84);
+  --page-line: rgba(13, 31, 115, 0.12);
+  --button-bg: #0d1f73;
+  --button-text: #ffffff;
+  --button-border: rgba(13, 31, 115, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.9);
+  --pill-border: rgba(13, 31, 115, 0.1);
 }
 
-.point-line {
-  border-color: var(--page-line);
+body[data-page="favorites"] {
+  --page-bg: #f7f6fa;
+  --page-text: #2c3550;
+  --page-text-muted: #626b83;
+  --page-point: #3e4f7d;
+  --page-point-strong: #2c3550;
+  --page-card: rgba(255, 255, 255, 0.84);
+  --page-line: rgba(62, 79, 125, 0.12);
+  --button-bg: #3e4f7d;
+  --button-text: #ffffff;
+  --button-border: rgba(62, 79, 125, 0.14);
+  --pill-bg: rgba(255, 255, 255, 0.9);
+  --pill-border: rgba(62, 79, 125, 0.1);
 }
 
-/* =========================
-   5. Accessibility / Motion
-   ========================= */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
+/* 초기 진입 시 실제 페이지 노출 방지 */
+body[data-initial-loading="true"] {
+  overflow: hidden;
+}
+
+body[data-initial-loading="true"] #app-shell {
+  visibility: hidden !important;
+}
+
+body[data-initial-loading="false"] #app-shell,
+body:not([data-initial-loading]) #app-shell {
+  visibility: visible !important;
 }

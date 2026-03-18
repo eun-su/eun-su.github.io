@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
-import styles from "./PageTransition.module.scss";
 
 type NavigateEventDetail = {
   href: string;
@@ -13,203 +12,64 @@ type TransitionTheme = {
   label: string;
   baseColor: string;
   fillColor: string;
-  glowColor: string;
-  textColor: string;
-  textGlowColor: string;
   barTrackColor: string;
-  barFillColor: string;
 };
 
-function hexToRgb(hex: string) {
-  const clean = hex.replace("#", "");
-  const normalized =
-    clean.length === 3
-      ? clean
-          .split("")
-          .map((char) => char + char)
-          .join("")
-      : clean;
-
-  const num = Number.parseInt(normalized, 16);
-
-  return {
-    r: (num >> 16) & 255,
-    g: (num >> 8) & 255,
-    b: num & 255,
-  };
-}
-
-function rgbToHex(r: number, g: number, b: number) {
-  const toHex = (value: number) =>
-    Math.max(0, Math.min(255, Math.round(value)))
-      .toString(16)
-      .padStart(2, "0");
-
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-function getComplementaryColor(hex: string) {
-  const { r, g, b } = hexToRgb(hex);
-  return rgbToHex(255 - r, 255 - g, 255 - b);
-}
-
-function getLuminance(hex: string) {
-  const { r, g, b } = hexToRgb(hex);
-
-  const channel = (value: number) => {
-    const v = value / 255;
-    return v <= 0.03928
-      ? v / 12.92
-      : ((v + 0.055) / 1.055) ** 2.4;
-  };
-
-  const rr = channel(r);
-  const gg = channel(g);
-  const bb = channel(b);
-
-  return 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
-}
-
-function getContrastRatio(hex1: string, hex2: string) {
-  const l1 = getLuminance(hex1);
-  const l2 = getLuminance(hex2);
-
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-
-  return (lighter + 0.05) / (darker + 0.05);
-}
-
-function lightenHex(hex: string, amount: number) {
-  const { r, g, b } = hexToRgb(hex);
-
-  return rgbToHex(
-    r + (255 - r) * amount,
-    g + (255 - g) * amount,
-    b + (255 - b) * amount
-  );
-}
-
-function darkenHex(hex: string, amount: number) {
-  const { r, g, b } = hexToRgb(hex);
-
-  return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount));
-}
-
-function getReadableTextColor(backgroundHex: string, pointHex: string) {
-  const complementary = getComplementaryColor(pointHex);
-  const lighterComplement = lightenHex(complementary, 0.18);
-  const darkerComplement = darkenHex(complementary, 0.22);
-  const white = "#FFFFFF";
-  const black = "#111111";
-
-  const candidates = [
-    { color: complementary, contrast: getContrastRatio(backgroundHex, complementary) },
-    {
-      color: lighterComplement,
-      contrast: getContrastRatio(backgroundHex, lighterComplement),
-    },
-    {
-      color: darkerComplement,
-      contrast: getContrastRatio(backgroundHex, darkerComplement),
-    },
-    { color: white, contrast: getContrastRatio(backgroundHex, white) },
-    { color: black, contrast: getContrastRatio(backgroundHex, black) },
-  ].sort((a, b) => b.contrast - a.contrast);
-
-  return candidates[0].color;
-}
-
-function hexToRgba(hex: string, alpha: number) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function makeTheme(
-  label: string,
-  baseColor: string,
-  fillColor: string,
-  glowColor: string,
-  barTrackColor: string,
-  barFillColor?: string
-): TransitionTheme {
-  const readableTextColor = getReadableTextColor(baseColor, fillColor);
-  const textGlowColor = hexToRgba(getComplementaryColor(fillColor), 0.28);
-
-  return {
-    label,
-    baseColor,
-    fillColor,
-    glowColor,
-    textColor: readableTextColor,
-    textGlowColor,
-    barTrackColor,
-    barFillColor: barFillColor ?? fillColor,
-  };
-}
+const LOADER_TEXT_COLOR = "#EAEAF0";
+const LOADER_BAR_FILL_COLOR = "#EAEAF0";
 
 const PAGE_THEME_MAP: Record<string, TransitionTheme> = {
-  "/": makeTheme(
-    "Entering Eunsu World",
-    "#FDF5F9",
-    "#060AE5",
-    "rgba(6, 10, 229, 0.28)",
-    "rgba(1, 17, 73, 0.16)",
-    "#011149"
-  ),
-  "/intro": makeTheme(
-    "Entering Intro",
-    "#F8F9FC",
-    "#2D3D59",
-    "rgba(45, 61, 89, 0.28)",
-    "rgba(45, 61, 89, 0.14)"
-  ),
-  "/design": makeTheme(
-    "Entering Design Works",
-    "#F3ECF7",
-    "#8A0324",
-    "rgba(138, 3, 36, 0.24)",
-    "rgba(138, 3, 36, 0.14)"
-  ),
-  "/study": makeTheme(
-    "Entering Study Notes",
-    "#FCFCFD",
-    "#8E0A22",
-    "rgba(142, 10, 34, 0.24)",
-    "rgba(142, 10, 34, 0.14)"
-  ),
-  "/issues": makeTheme(
-    "Entering Issue Board",
-    "#F4F6FB",
-    "#1D2A72",
-    "rgba(29, 42, 114, 0.24)",
-    "rgba(29, 42, 114, 0.14)"
-  ),
-  "/favorites": makeTheme(
-    "Entering Favorites",
-    "#F7F6FA",
-    "#4B3F72",
-    "rgba(75, 63, 114, 0.24)",
-    "rgba(75, 63, 114, 0.14)"
-  ),
+  "/": {
+    label: "Entering Eunsu World",
+    baseColor: "#F8F9FC",
+    fillColor: "#1C2F6C",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
+  "/intro": {
+    label: "Entering Intro",
+    baseColor: "#F7F7F7",
+    fillColor: "#33456B",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
+  "/design": {
+    label: "Entering Design Works",
+    baseColor: "#F4EFF4",
+    fillColor: "#A1002B",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
+  "/study": {
+    label: "Entering Study Notes",
+    baseColor: "#FCFCFD",
+    fillColor: "#960C24",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
+  "/issues": {
+    label: "Entering Issue Board",
+    baseColor: "#F4F6FB",
+    fillColor: "#0D1F73",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
+  "/favorites": {
+    label: "Entering Favorites",
+    baseColor: "#F7F6FA",
+    fillColor: "#3E4F7D",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
 };
 
-const DEFAULT_THEME = makeTheme(
-  "Loading",
-  "#F7F6FA",
-  "#2D3D59",
-  "rgba(45, 61, 89, 0.24)",
-  "rgba(45, 61, 89, 0.14)"
-);
+const DEFAULT_THEME: TransitionTheme = {
+  label: "Loading",
+  baseColor: "#F8F9FC",
+  fillColor: "#1C2F6C",
+  barTrackColor: "rgba(234, 234, 240, 0.26)",
+};
 
 export default function PageTransition() {
   const router = useRouter();
   const pathname = usePathname();
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const maskGlowRef = useRef<HTMLDivElement | null>(null);
   const maskRef = useRef<HTMLDivElement | null>(null);
-
   const uiRef = useRef<HTMLDivElement | null>(null);
   const labelRef = useRef<HTMLParagraphElement | null>(null);
   const valueRef = useRef<HTMLParagraphElement | null>(null);
@@ -220,7 +80,15 @@ export default function PageTransition() {
   const waitingForRouteRef = useRef(false);
   const hasIntroPlayedRef = useRef(false);
   const introStartedRef = useRef(false);
-  const pendingHrefRef = useRef<string | null>(null);
+
+  const revealAppShell = () => {
+    document.body.setAttribute("data-initial-loading", "false");
+
+    const appShell = document.getElementById("app-shell");
+    if (appShell) {
+      appShell.style.visibility = "visible";
+    }
+  };
 
   const setCounterText = (value: number) => {
     if (!valueRef.current) return;
@@ -251,9 +119,10 @@ export default function PageTransition() {
   const applyTheme = (theme: TransitionTheme) => {
     if (
       !overlayRef.current ||
-      !maskGlowRef.current ||
       !maskRef.current ||
       !uiRef.current ||
+      !labelRef.current ||
+      !valueRef.current ||
       !barTrackRef.current ||
       !barRef.current
     ) {
@@ -262,14 +131,18 @@ export default function PageTransition() {
 
     overlayRef.current.style.backgroundColor = theme.baseColor;
     maskRef.current.style.backgroundColor = theme.fillColor;
-    maskGlowRef.current.style.backgroundColor = theme.fillColor;
-    maskGlowRef.current.style.boxShadow = `0 0 90px ${theme.glowColor}`;
 
-    uiRef.current.style.color = theme.textColor;
-    uiRef.current.style.setProperty("--loader-text-glow", theme.textGlowColor);
+    uiRef.current.style.color = LOADER_TEXT_COLOR;
+    uiRef.current.style.textShadow = "none";
+
+    labelRef.current.style.color = LOADER_TEXT_COLOR;
+    labelRef.current.style.textShadow = "none";
+
+    valueRef.current.style.color = LOADER_TEXT_COLOR;
+    valueRef.current.style.textShadow = "none";
 
     barTrackRef.current.style.backgroundColor = theme.barTrackColor;
-    barRef.current.style.backgroundColor = theme.barFillColor;
+    barRef.current.style.backgroundColor = LOADER_BAR_FILL_COLOR;
   };
 
   const getClosedCircleFromTopLeft = () => "circle(0px at 0% 0%)";
@@ -298,7 +171,6 @@ export default function PageTransition() {
       opacity: 1,
       x: 0,
       y: 0,
-      rotate: 0,
       filter: "blur(0px)",
     });
 
@@ -326,13 +198,9 @@ export default function PageTransition() {
       return;
     }
 
-    gsap.set(uiRef.current, { opacity: 1 });
-
     gsap.set([labelRef.current, valueRef.current], {
       opacity: 0,
       y: 14,
-      x: 0,
-      rotate: 0,
       filter: "blur(3px)",
     });
 
@@ -349,38 +217,34 @@ export default function PageTransition() {
     });
   };
 
-  const setMasksTopLeftClosed = () => {
-    if (!maskRef.current || !maskGlowRef.current) return;
-
-    gsap.set([maskRef.current, maskGlowRef.current], {
+  const setMaskTopLeftClosed = () => {
+    if (!maskRef.current) return;
+    gsap.set(maskRef.current, {
       clipPath: getClosedCircleFromTopLeft(),
       opacity: 1,
     });
   };
 
-  const setMasksTopLeftOpen = () => {
-    if (!maskRef.current || !maskGlowRef.current) return;
-
-    gsap.set([maskRef.current, maskGlowRef.current], {
+  const setMaskTopLeftOpen = () => {
+    if (!maskRef.current) return;
+    gsap.set(maskRef.current, {
       clipPath: getOpenCircleFromTopLeft(),
       opacity: 1,
     });
   };
 
-  const setMasksBottomRightOpen = () => {
-    if (!maskRef.current || !maskGlowRef.current) return;
-
-    gsap.set([maskRef.current, maskGlowRef.current], {
+  const setMaskBottomRightOpen = () => {
+    if (!maskRef.current) return;
+    gsap.set(maskRef.current, {
       clipPath: getOpenCircleFromBottomRight(),
       opacity: 1,
     });
   };
 
-  const finishReveal = () => {
+  const finishReveal = (isInitial = false) => {
     if (
       !overlayRef.current ||
       !maskRef.current ||
-      !maskGlowRef.current ||
       !labelRef.current ||
       !valueRef.current ||
       !barTrackRef.current
@@ -390,43 +254,28 @@ export default function PageTransition() {
 
     const tl = gsap.timeline({
       onComplete: () => {
+        if (isInitial) {
+          revealAppShell();
+        }
+
         gsap.set(overlayRef.current, {
           opacity: 0,
           pointerEvents: "none",
         });
 
-        gsap.set([maskRef.current, maskGlowRef.current], {
-          opacity: 1,
-        });
-
-        setMasksTopLeftClosed();
+        setMaskTopLeftClosed();
         isBusyRef.current = false;
-        pendingHrefRef.current = null;
       },
     });
 
-    tl.to({}, { duration: 0.06 })
-      .to([labelRef.current, valueRef.current], {
-        keyframes: [
-          { x: -4, rotate: -2, duration: 0.03 },
-          { x: 4, rotate: 2, duration: 0.03 },
-          { x: -2, rotate: -1, duration: 0.03 },
-          { x: 0, rotate: 0, duration: 0.02 },
-        ],
-        ease: "power2.out",
-      })
-      .to(
-        [labelRef.current, valueRef.current],
-        {
-          y: -18,
-          opacity: 0,
-          filter: "blur(2px)",
-          duration: 0.18,
-          ease: "power2.out",
-          stagger: 0.02,
-        },
-        "+=0.01"
-      )
+    tl.to([labelRef.current, valueRef.current], {
+      y: -18,
+      opacity: 0,
+      filter: "blur(2px)",
+      duration: 0.18,
+      ease: "power2.out",
+      stagger: 0.02,
+    })
       .to(
         barTrackRef.current,
         {
@@ -436,38 +285,23 @@ export default function PageTransition() {
           duration: 0.16,
           ease: "power2.out",
         },
-        "<+0.01"
+        "<"
       )
-      .to({}, { duration: 0.04 })
       .to(
         maskRef.current,
         {
           clipPath: getClosedCircleFromBottomRight(),
-          duration: 1.08,
+          duration: 1.12,
           ease: "power4.in",
         },
         0
-      )
-      .to(
-        maskGlowRef.current,
-        {
-          clipPath: getClosedCircleFromBottomRight(),
-          duration: 1.08,
-          ease: "power4.in",
-        },
-        "<"
-      )
-      .set(overlayRef.current, {
-        opacity: 0,
-        pointerEvents: "none",
-      });
+      );
   };
 
   const playIntro = () => {
     if (
       !overlayRef.current ||
       !maskRef.current ||
-      !maskGlowRef.current ||
       !labelRef.current ||
       !valueRef.current ||
       !barTrackRef.current ||
@@ -478,21 +312,9 @@ export default function PageTransition() {
 
     if (introStartedRef.current) return;
     introStartedRef.current = true;
-
-    const theme = getThemeByHref("/", true);
-
     isBusyRef.current = true;
 
-    gsap.killTweensOf([
-      overlayRef.current,
-      maskRef.current,
-      maskGlowRef.current,
-      labelRef.current,
-      valueRef.current,
-      barTrackRef.current,
-      barRef.current,
-    ]);
-
+    const theme = getThemeByHref("/", true);
     applyTheme(theme);
 
     gsap.set(overlayRef.current, {
@@ -500,7 +322,7 @@ export default function PageTransition() {
       pointerEvents: "auto",
     });
 
-    setMasksTopLeftOpen();
+    setMaskTopLeftOpen();
     resetLoaderUI(theme.label);
     hideLoaderUIImmediately();
 
@@ -509,21 +331,17 @@ export default function PageTransition() {
     gsap.timeline({
       onComplete: () => {
         hasIntroPlayedRef.current = true;
-        finishReveal();
+        finishReveal(true);
       },
     })
-      .to({}, { duration: 0.18 })
-      .to(
-        [labelRef.current, valueRef.current, barTrackRef.current],
-        {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.32,
-          ease: "power2.out",
-          stagger: 0.04,
-        }
-      )
+      .to([labelRef.current, valueRef.current, barTrackRef.current], {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.34,
+        ease: "power2.out",
+        stagger: 0.04,
+      })
       .to(
         counter,
         {
@@ -534,7 +352,7 @@ export default function PageTransition() {
             setCounterText(counter.value);
           },
         },
-        0.45
+        0.3
       )
       .to(
         barRef.current,
@@ -543,7 +361,7 @@ export default function PageTransition() {
           duration: 1.1,
           ease: "none",
         },
-        0.45
+        0.3
       );
   };
 
@@ -551,7 +369,6 @@ export default function PageTransition() {
     if (
       !overlayRef.current ||
       !maskRef.current ||
-      !maskGlowRef.current ||
       !labelRef.current ||
       !valueRef.current ||
       !barTrackRef.current ||
@@ -565,18 +382,6 @@ export default function PageTransition() {
     const theme = getThemeByHref(href);
 
     isBusyRef.current = true;
-    pendingHrefRef.current = href;
-
-    gsap.killTweensOf([
-      overlayRef.current,
-      maskRef.current,
-      maskGlowRef.current,
-      labelRef.current,
-      valueRef.current,
-      barTrackRef.current,
-      barRef.current,
-    ]);
-
     applyTheme(theme);
 
     gsap.set(overlayRef.current, {
@@ -584,7 +389,7 @@ export default function PageTransition() {
       pointerEvents: "auto",
     });
 
-    setMasksTopLeftClosed();
+    setMaskTopLeftClosed();
     resetLoaderUI(theme.label);
     hideLoaderUIImmediately();
 
@@ -604,15 +409,6 @@ export default function PageTransition() {
           ease: "power4.in",
         },
         0
-      )
-      .to(
-        maskGlowRef.current,
-        {
-          clipPath: getOpenCircleFromTopLeft(),
-          duration: 0.96,
-          ease: "power4.in",
-        },
-        "<"
       )
       .to(
         [labelRef.current, valueRef.current, barTrackRef.current],
@@ -679,11 +475,10 @@ export default function PageTransition() {
 
       const theme = getThemeByHref(pathname);
       applyTheme(theme);
-
-      setMasksBottomRightOpen();
+      setMaskBottomRightOpen();
 
       window.setTimeout(() => {
-        finishReveal();
+        finishReveal(false);
       }, 120);
     }
   }, [pathname]);
@@ -691,39 +486,96 @@ export default function PageTransition() {
   return (
     <div
       ref={overlayRef}
-      className={styles.overlay}
-      style={{ opacity: 1, pointerEvents: "auto" }}
       aria-hidden="true"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        opacity: 1,
+        pointerEvents: "auto",
+        overflow: "hidden",
+        background: "#f8f9fc",
+      }}
     >
       <div
-        ref={maskGlowRef}
-        className={styles.maskGlow}
-        style={{
-          clipPath: "circle(150vmax at 0% 0%)",
-          opacity: 0.46,
-        }}
-      />
-
-      <div
         ref={maskRef}
-        className={styles.mask}
         style={{
+          position: "absolute",
+          inset: 0,
+          background: "#1c2f6c",
           clipPath: "circle(150vmax at 0% 0%)",
           opacity: 1,
         }}
       />
 
-      <div ref={uiRef} className={styles.ui}>
-        <p ref={labelRef} className={styles.label}>
+      <div
+        ref={uiRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          color: LOADER_TEXT_COLOR,
+          textAlign: "center",
+          padding: "1.5rem",
+          textShadow: "none",
+        }}
+      >
+        <p
+          ref={labelRef}
+          style={{
+            margin: "0 0 0.75rem",
+            fontSize: "0.75rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.24em",
+            opacity: 0,
+            color: LOADER_TEXT_COLOR,
+            textShadow: "none",
+          }}
+        >
           Entering Eunsu World
         </p>
 
-        <p ref={valueRef} className={styles.value}>
+        <p
+          ref={valueRef}
+          style={{
+            margin: 0,
+            fontSize: "clamp(34px, 7vw, 72px)",
+            lineHeight: 1,
+            letterSpacing: "-0.05em",
+            fontWeight: 600,
+            opacity: 0,
+            color: LOADER_TEXT_COLOR,
+            textShadow: "none",
+          }}
+        >
           0%
         </p>
 
-        <div ref={barTrackRef} className={styles.barTrack}>
-          <div ref={barRef} className={styles.barFill} />
+        <div
+          ref={barTrackRef}
+          style={{
+            width: "220px",
+            height: "2px",
+            marginTop: "1.25rem",
+            background: "rgba(234, 234, 240, 0.26)",
+            overflow: "hidden",
+            opacity: 0,
+            borderRadius: "9999px",
+          }}
+        >
+          <div
+            ref={barRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              background: LOADER_BAR_FILL_COLOR,
+              transformOrigin: "left center",
+              transform: "scaleX(0)",
+            }}
+          />
         </div>
       </div>
     </div>

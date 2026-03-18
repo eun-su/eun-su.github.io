@@ -25,9 +25,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        data-initial-loading="true"
+      >
         <PageTransition />
+
+        <div
+          id="app-shell"
+          style={{
+            visibility: "hidden",
+          }}
+        >
+          {children}
+        </div>
       </body>
     </html>
   );
