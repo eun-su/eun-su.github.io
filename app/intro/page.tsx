@@ -2,13 +2,14 @@
 
 import { useLayoutEffect, useRef } from "react";
 import Header from "@/components/Header";
+import FloatingBlurOverlay from "@/components/intro/FloatingBlurOverlay";
+import styles from "./IntroPage.module.scss";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-// O 원형 SVG를 렌더링한다
 function OMark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 240 240" aria-hidden="true" className={className}>
@@ -33,19 +34,11 @@ function OMark({ className = "" }: { className?: string }) {
 export default function IntroPage() {
   const pageRef = useRef<HTMLDivElement | null>(null);
 
-  // 항상 떠 있는 O를 참조한다
   const floatingORef = useRef<HTMLDivElement | null>(null);
-
-  // O 옆 기본 단어를 참조한다
   const floatingWordRef = useRef<HTMLDivElement | null>(null);
-
-  // 마지막 섹션에서 O 왼쪽에 붙는 텍스트를 참조한다
   const finalLeftWordRef = useRef<HTMLDivElement | null>(null);
-
-  // 마지막 섹션에서 O 오른쪽에 붙는 텍스트를 참조한다
   const finalRightWordRef = useRef<HTMLDivElement | null>(null);
 
-  // 각 섹션과 전환 구간을 참조한다
   const introRef = useRef<HTMLElement | null>(null);
   const transition12Ref = useRef<HTMLElement | null>(null);
   const section2Ref = useRef<HTMLElement | null>(null);
@@ -56,7 +49,6 @@ export default function IntroPage() {
   const transition45Ref = useRef<HTMLElement | null>(null);
   const section5Ref = useRef<HTMLElement | null>(null);
 
-  // 섹션별 콘텐츠 박스를 참조한다
   const section2ContentRef = useRef<HTMLDivElement | null>(null);
   const section3ContentRef = useRef<HTMLDivElement | null>(null);
   const section4ContentRef = useRef<HTMLDivElement | null>(null);
@@ -82,7 +74,6 @@ export default function IntroPage() {
     }
 
     const ctx = gsap.context(() => {
-      // O 옆 단어 전환 모션을 처리한다
       const applyWordMorph = (
         progress: number,
         oldText: string,
@@ -128,28 +119,25 @@ export default function IntroPage() {
       const section4Content = section4ContentRef.current!;
       const section5Content = section5ContentRef.current!;
 
-      // 전체 레이아웃과 애니메이션을 다시 세팅한다
       const build = () => {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (!trigger.vars.id?.toString().startsWith("intro-blur-")) {
+            trigger.kill();
+          }
+        });
 
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
-        // O 시작 크기를 세팅한다
         const oSizeStart = Math.min(Math.max(vw * 0.143, 120), 195);
-
-        // 일반 섹션용 O 크기를 세팅한다
         const oSize = Math.min(Math.max(vw * 0.095, 82), 128);
+        const oSizeEnd = Math.min(Math.max(vw * 0.046, 48), 70);
 
-        // 마지막 섹션용 O 크기를 세팅한다
-        const oSizeEnd = Math.min(Math.max(vw * 0.082, 74), 110);
-
-        // O 위치를 섹션별로 세팅한다
-        const pos1 = { x: vw * 0.25, y: vh * 0.5, size: oSizeStart };
-        const pos2 = { x: vw * 0.19, y: vh * 0.54, size: oSize };
-        const pos3 = { x: vw * 0.60, y: vh * 0.52, size: oSize };
+        const pos1 = { x: vw * 0.25, y: vh * 0.4, size: oSizeStart };
+        const pos2 = { x: vw * 0.19, y: vh * 0.5, size: oSize };
+        const pos3 = { x: vw * 0.6, y: vh * 0.5, size: oSize };
         const pos4 = { x: vw * 0.24, y: vh * 0.5, size: oSize };
-        const pos5 = { x: vw * 0.5, y: vh * 0.5, size: oSizeEnd };
+        const pos5 = { x: vw * 0.4, y: vh * 0.5, size: oSizeEnd };
 
         gsap.killTweensOf([
           floatingO,
@@ -162,7 +150,6 @@ export default function IntroPage() {
           section5Content,
         ]);
 
-        // O 초기 위치를 세팅한다
         gsap.set(floatingO, {
           left: 0,
           top: 0,
@@ -176,7 +163,6 @@ export default function IntroPage() {
           opacity: 1,
         });
 
-        // O 옆 단어 초기 위치를 세팅한다
         gsap.set(floatingWord, {
           left: pos1.x + pos1.size * 0.42,
           top: pos1.y,
@@ -189,9 +175,8 @@ export default function IntroPage() {
 
         floatingWord.textContent = "-LAT";
 
-        // 마지막 섹션 전용 좌우 텍스트 초기 상태를 세팅한다
         gsap.set(finalLeftWord, {
-          left: pos5.x - pos5.size * 0.9,
+          left: pos5.x - pos5.size * 0.5,
           top: pos5.y,
           xPercent: -100,
           yPercent: -50,
@@ -201,7 +186,7 @@ export default function IntroPage() {
         });
 
         gsap.set(finalRightWord, {
-          left: pos5.x + pos5.size * 0.9,
+          left: pos5.x + pos5.size * 0.5,
           top: pos5.y,
           xPercent: 0,
           yPercent: -50,
@@ -210,13 +195,11 @@ export default function IntroPage() {
           filter: "blur(8px)",
         });
 
-        // 다음 섹션 텍스트 초기 상태를 세팅한다
         gsap.set(section2Content, { opacity: 0, x: -120, y: 18, filter: "blur(8px)" });
         gsap.set(section3Content, { opacity: 0, x: -120, y: 18, filter: "blur(8px)" });
         gsap.set(section4Content, { opacity: 0, x: -120, y: 18, filter: "blur(8px)" });
         gsap.set(section5Content, { opacity: 0, x: -120, y: 18, filter: "blur(8px)" });
 
-        // 1 -> 2 전환을 처리한다
         gsap.timeline({
           scrollTrigger: {
             trigger: transition12Ref.current,
@@ -267,7 +250,6 @@ export default function IntroPage() {
             0.18
           );
 
-        // 2 -> 3 전환을 처리한다
         gsap.timeline({
           scrollTrigger: {
             trigger: transition23Ref.current,
@@ -329,7 +311,6 @@ export default function IntroPage() {
             0.22
           );
 
-        // 3 -> 4 전환을 처리한다
         gsap.timeline({
           scrollTrigger: {
             trigger: transition34Ref.current,
@@ -391,7 +372,6 @@ export default function IntroPage() {
             0.22
           );
 
-        // 4 -> 5 전환을 처리한다
         gsap.timeline({
           scrollTrigger: {
             trigger: transition45Ref.current,
@@ -408,7 +388,7 @@ export default function IntroPage() {
                   { x: pos4.x, y: pos4.y },
                   { x: pos4.x + (pos5.x - pos4.x) * 0.4, y: pos4.y + 4 },
                   { x: pos4.x + (pos5.x - pos4.x) * 0.82, y: pos5.y - 2 },
-                  { x: pos5.x, y: pos5.y },
+                  { x: pos5.x, y: pos5.y + 5 },
                 ],
               } as any,
               width: pos5.size,
@@ -421,7 +401,6 @@ export default function IntroPage() {
           .to(
             floatingWord,
             {
-              // 마지막에는 기존 단어를 숨긴다
               opacity: 0,
               x: 24,
               filter: "blur(8px)",
@@ -480,7 +459,11 @@ export default function IntroPage() {
 
       return () => {
         window.removeEventListener("resize", build);
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        ScrollTrigger.getAll().forEach((trigger) => {
+          if (!trigger.vars.id?.toString().startsWith("intro-blur-")) {
+            trigger.kill();
+          }
+        });
       };
     }, pageRef);
 
@@ -488,8 +471,20 @@ export default function IntroPage() {
   }, []);
 
   return (
-    <main ref={pageRef} className="bg-neutral-100 text-black">
+    <main ref={pageRef} className="relative bg-neutral-100 text-black">
       <Header />
+
+      <FloatingBlurOverlay
+        introRef={introRef}
+        section2Ref={section2Ref}
+        section3Ref={section3Ref}
+        section4Ref={section4Ref}
+        section5Ref={section5Ref}
+        transition12Ref={transition12Ref}
+        transition23Ref={transition23Ref}
+        transition34Ref={transition34Ref}
+        transition45Ref={transition45Ref}
+      />
 
       {/* 항상 떠 있는 O를 렌더링한다 */}
       <div className="pointer-events-none fixed inset-0 z-30">
@@ -523,14 +518,13 @@ export default function IntroPage() {
       </div>
 
       {/* SECTION 1 */}
-      {/* 세션 1 텍스트 편집 TOP */}
       <section
         ref={introRef}
         className="relative flex min-h-[100svh] items-center bg-transparent px-6 md:px-10"
       >
         <div className="mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-6">
           <div className="col-span-12 md:col-start-8 md:col-span-5">
-            <div className="relative">
+            <div className={styles.introSectionCopy}>
               <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
                 Section 01 · Origin
               </p>
@@ -551,16 +545,13 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-      {/* 세션 1 텍스트 편집 END */}
 
-      {/* 1 -> 2 전환 구간을 만든다 */}
       <section
         ref={transition12Ref}
         className="relative min-h-[70svh] bg-transparent"
       />
 
       {/* SECTION 2 */}
-      {/* 세션 2 텍스트 편집 TOP */}
       <section
         ref={section2Ref}
         className="relative min-h-[210svh] bg-transparent"
@@ -568,7 +559,7 @@ export default function IntroPage() {
         <div className="sticky top-0 flex h-[100svh] items-center px-6 md:px-10">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-6">
             <div className="col-span-12 md:col-start-8 md:col-span-5">
-              <div ref={section2ContentRef}>
+              <div ref={section2ContentRef} className={styles.introSectionCopy}>
                 <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
                   Section 02 · Observe
                 </p>
@@ -587,16 +578,13 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-      {/* 세션 2 텍스트 편집 END */}
 
-      {/* 2 -> 3 전환 구간을 만든다 */}
       <section
         ref={transition23Ref}
         className="relative min-h-[70svh] bg-transparent"
       />
 
       {/* SECTION 3 */}
-      {/* 세션 3 텍스트 편집 TOP */}
       <section
         ref={section3Ref}
         className="relative min-h-[210svh] bg-transparent"
@@ -604,7 +592,7 @@ export default function IntroPage() {
         <div className="sticky top-0 flex h-[100svh] items-center px-6 md:px-10">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-6">
             <div className="col-span-12 md:col-span-5">
-              <div ref={section3ContentRef}>
+              <div ref={section3ContentRef} className={styles.introSectionCopy}>
                 <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
                   Section 03 · Organize
                 </p>
@@ -623,16 +611,13 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-      {/* 세션 3 텍스트 편집 END */}
 
-      {/* 3 -> 4 전환 구간을 만든다 */}
       <section
         ref={transition34Ref}
         className="relative min-h-[70svh] bg-transparent"
       />
 
       {/* SECTION 4 */}
-      {/* 세션 4 텍스트 편집 TOP */}
       <section
         ref={section4Ref}
         className="relative min-h-[210svh] bg-transparent"
@@ -640,7 +625,7 @@ export default function IntroPage() {
         <div className="sticky top-0 flex h-[100svh] items-center px-6 md:px-10">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-6">
             <div className="col-span-12 md:col-start-8 md:col-span-5">
-              <div ref={section4ContentRef}>
+              <div ref={section4ContentRef} className={styles.introSectionCopy}>
                 <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
                   Section 04 · Open
                 </p>
@@ -658,26 +643,23 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-      {/* 세션 4 텍스트 편집 END */}
 
-      {/* 4 -> 5 전환 구간을 만든다 */}
       <section
         ref={transition45Ref}
         className="relative min-h-[70svh] bg-transparent"
       />
 
       {/* SECTION 5 */}
-      {/* 세션 5 텍스트 편집 TOP */}
       <section
         ref={section5Ref}
         className="relative min-h-[150svh] bg-transparent"
       >
         <div className="sticky top-0 flex h-[100svh] items-center justify-center px-6 md:px-10">
-          <div ref={section5ContentRef} className="text-center">
+          <div ref={section5ContentRef} className={`${styles.introSectionCopy} text-center`}>
             <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
               Section 05 · Contact
             </p>
-            <h2 className="text-[10vw] leading-[0.95] tracking-[-0.06em] md:text-[4.6vw]">
+            <h2 className={`text-[10vw] leading-[0.95] tracking-[-0.06em] md:text-[4.6vw] ${styles.IntroSection5Email}`}>
               eunsuo@naver.com
             </h2>
             <p className="mt-5 text-sm leading-[1.9] text-black/72 md:text-lg">
@@ -686,7 +668,6 @@ export default function IntroPage() {
           </div>
         </div>
       </section>
-      {/* 세션 5 텍스트 편집 END */}
     </main>
   );
 }

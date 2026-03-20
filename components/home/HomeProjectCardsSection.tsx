@@ -27,8 +27,15 @@ export default function HomeProjectCardsSection({
 
       <div className={styles.projectViewport}>
         <div ref={projectTrackRef} className={styles.projectTrack}>
-          {cards.map((card) => (
-            <article key={card.step} className={styles.projectCard}>
+          {cards.map((card, index) => (
+            <article
+              key={card.step}
+              data-project-card
+              data-card-index={index}
+              className={`${styles.projectCard} ${
+                index === currentProjectCard ? styles.projectCardActive : ""
+              }`}
+            >
               <div className={styles.projectCardStep}>{card.step}</div>
 
               <h3 className={styles.projectCardTitle}>{card.title}</h3>

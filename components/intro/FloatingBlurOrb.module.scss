@@ -1,0 +1,38 @@
+.orb {
+  --orb-lag-y: 0px;
+
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.1;
+
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      rgba(120, 170, 255, 0.9) 0%,
+      rgba(72, 123, 255, 0.66) 26%,
+      rgba(44, 86, 214, 0.42) 52%,
+      rgba(30, 63, 179, 0.18) 72%,
+      rgba(30, 63, 179, 0) 100%
+    );
+
+  filter: blur(90px);
+  transform: translate3d(0, var(--orb-lag-y), 0);
+  will-change: transform;
+}
+
+.sm {
+  width: 120px;
+  height: 120px;
+}
+
+.md {
+  width: 180px;
+  height: 180px;
+}
+
+.lg {
+  width: 260px;
+  height: 260px;
+}

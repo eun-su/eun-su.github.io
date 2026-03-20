@@ -1,0 +1,105 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.orbWrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.orb {
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.orbOne {
+  width: 260px;
+  height: 260px;
+  opacity: 0.25;
+  background:
+    radial-gradient(
+      circle,
+      rgba(173, 201, 255, 0.98) 0%,
+      rgba(112, 151, 255, 0.9) 30%,
+      rgba(67, 108, 240, 0.72) 58%,
+      rgba(40, 74, 194, 0) 100%
+    );
+  filter: blur(90px);
+}
+
+.orbTwo {
+  width: 210px;
+  height: 210px;
+  opacity: 0.33;
+  background:
+    radial-gradient(
+      circle,
+      rgba(196, 216, 255, 0.98) 0%,
+      rgba(135, 167, 255, 0.9) 32%,
+      rgba(85, 117, 232, 0.74) 58%,
+      rgba(54, 85, 202, 0) 100%
+    );
+  filter: blur(76px);
+}
+
+.orbThree {
+  width: 160px;
+  height: 160px;
+  opacity: 0.25;
+  background:
+    radial-gradient(
+      circle,
+      rgba(214, 228, 255, 0.98) 0%,
+      rgba(160, 185, 255, 0.92) 32%,
+      rgba(104, 133, 240, 0.76) 58%,
+      rgba(70, 100, 210, 0) 100%
+    );
+  filter: blur(60px);
+}
+
+@media (max-width: 1023px) {
+  .orbOne {
+    width: 210px;
+    height: 210px;
+    filter: blur(74px);
+  }
+
+  .orbTwo {
+    width: 170px;
+    height: 170px;
+    filter: blur(62px);
+  }
+
+  .orbThree {
+    width: 130px;
+    height: 130px;
+    filter: blur(48px);
+  }
+}
+
+@media (max-width: 767px) {
+  .orbOne {
+    width: 160px;
+    height: 160px;
+    filter: blur(58px);
+  }
+
+  .orbTwo {
+    width: 130px;
+    height: 130px;
+    filter: blur(48px);
+  }
+
+  .orbThree {
+    width: 100px;
+    height: 100px;
+    filter: blur(38px);
+  }
+}

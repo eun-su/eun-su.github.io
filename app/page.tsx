@@ -62,26 +62,238 @@ export default function Home() {
     );
   };
 
-  const animateProjectCards = (nextCardIndex: number) => {
-    const track = projectTrackRef.current;
-    if (!track) return;
+  const getProjectCards = () => {
+    if (!projectTrackRef.current) return [];
+    return Array.from(
+      projectTrackRef.current.querySelectorAll<HTMLElement>("[data-project-card]")
+    );
+  };
 
-    const xPercent = -(nextCardIndex * 100);
+  /**
+   * 정지 상태 기준 포즈
+   * - active만 보임
+   * - 나머지는 뒤에 있으면서 opacity 0
+   */
+  const getRestPose = (cardIndex: number, activeIndex: number) => {
+    const delta = cardIndex - activeIndex;
+
+    if (delta === 0) {
+      return {
+        xPercent: 0,
+        y: 0,
+        z: 0,
+        rotateY: 0,
+        rotateZ: 0,
+        scale: 1,
+        opacity: 1,
+        zIndex: 40,
+      };
+    }
+
+    if (delta > 0) {
+      return {
+        xPercent: 14,
+        y: 14,
+        z: -260,
+        rotateY: -24,
+        rotateZ: -1.2,
+        scale: 0.94,
+        opacity: 0,
+        zIndex: 10,
+      };
+    }
+
+    return {
+      xPercent: -14,
+      y: 14,
+      z: -260,
+      rotateY: 24,
+      rotateZ: 1.2,
+      scale: 0.94,
+      opacity: 0,
+      zIndex: 10,
+    };
+  };
+
+  /**
+   * 전환 직전 다음/이전 카드가 잠깐 보일 때의 pose
+   * activeIndex로 바로 두지 않고, entering 방향에 따라 시작 포즈를 잡습니다.
+   */
+  const getEnteringPose = (direction: 1 | -1) => {
+    if (direction === 1) {
+      return {
+        xPercent: 18,
+        y: 18,
+        z: -220,
+        rotateY: -28,
+        rotateZ: -1.6,
+        scale: 0.93,
+        opacity: 0,
+        zIndex: 30,
+      };
+    }
+
+    return {
+      xPercent: -18,
+      y: 18,
+      z: -220,
+      rotateY: 28,
+      rotateZ: 1.6,
+      scale: 0.93,
+      opacity: 0,
+      zIndex: 30,
+    };
+  };
+
+  const getExitingPose = (direction: 1 | -1) => {
+    if (direction === 1) {
+      return {
+        xPercent: -16,
+        y: 18,
+        z: -180,
+        rotateY: 20,
+        rotateZ: 1.2,
+        scale: 0.94,
+        opacity: 0,
+        zIndex: 20,
+      };
+    }
+
+    return {
+      xPercent: 16,
+      y: 18,
+      z: -180,
+      rotateY: -20,
+      rotateZ: -1.2,
+      scale: 0.94,
+      opacity: 0,
+      zIndex: 20,
+    };
+  };
+
+  const setProjectCardsImmediately = (activeIndex: number) => {
+    const cards = getProjectCards();
+    if (!cards.length) return;
+
+    cards.forEach((card, index) => {
+      const pose = getRestPose(index, activeIndex);
+
+      gsap.set(card, {
+        xPercent: pose.xPercent,
+        y: pose.y,
+        z: pose.z,
+        rotateY: pose.rotateY,
+        rotateZ: pose.rotateZ,
+        scale: pose.scale,
+        opacity: pose.opacity,
+        zIndex: pose.zIndex,
+        transformOrigin: "center center",
+        pointerEvents: index === activeIndex ? "auto" : "none",
+        force3D: true,
+      });
+    });
+  };
+
+  const animateProjectCards = (nextCardIndex: number) => {
+    const cards = getProjectCards();
+    if (!cards.length) return;
+
+    const prevCardIndex = currentProjectCardRef.current;
+    const direction: 1 | -1 = nextCardIndex > prevCardIndex ? 1 : -1;
+
+    const prevCard = cards[prevCardIndex];
+    const nextCard = cards[nextCardIndex];
+
+    if (!prevCard || !nextCard) return;
 
     isAnimatingRef.current = true;
     resetWheelAccumulator();
 
-    gsap.to(track, {
-      xPercent,
-      duration: 0.85,
-      ease: "power3.inOut",
+    const enteringPose = getEnteringPose(direction);
+    const exitingPose = getExitingPose(direction);
+
+    // 들어올 카드는 뒤쪽에서 완전 투명 상태로 시작
+    gsap.set(nextCard, {
+      xPercent: enteringPose.xPercent,
+      y: enteringPose.y,
+      z: enteringPose.z,
+      rotateY: enteringPose.rotateY,
+      rotateZ: enteringPose.rotateZ,
+      scale: enteringPose.scale,
+      opacity: 0,
+      zIndex: 30,
+      pointerEvents: "none",
+      force3D: true,
+    });
+
+    // 나머지 카드는 항상 완전 숨김
+    cards.forEach((card, index) => {
+      if (index !== prevCardIndex && index !== nextCardIndex) {
+        const hiddenPose = getRestPose(index, nextCardIndex);
+        gsap.set(card, {
+          xPercent: hiddenPose.xPercent,
+          y: hiddenPose.y,
+          z: hiddenPose.z,
+          rotateY: hiddenPose.rotateY,
+          rotateZ: hiddenPose.rotateZ,
+          scale: hiddenPose.scale,
+          opacity: 0,
+          zIndex: 10,
+          pointerEvents: "none",
+          force3D: true,
+        });
+      }
+    });
+
+    const tl = gsap.timeline({
+      defaults: {
+        duration: 0.82,
+        ease: "power3.inOut",
+      },
       onComplete: () => {
         currentProjectCardRef.current = nextCardIndex;
         setCurrentProjectCard(nextCardIndex);
+        setProjectCardsImmediately(nextCardIndex);
         isAnimatingRef.current = false;
         lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
       },
     });
+
+    // 현재 카드: 앞으로 있던 상태에서 뒤로 빠지며 사라짐
+    tl.to(
+      prevCard,
+      {
+        xPercent: exitingPose.xPercent,
+        y: exitingPose.y,
+        z: exitingPose.z,
+        rotateY: exitingPose.rotateY,
+        rotateZ: exitingPose.rotateZ,
+        scale: exitingPose.scale,
+        opacity: 0,
+        zIndex: 20,
+        pointerEvents: "none",
+        force3D: true,
+      },
+      0
+    );
+
+    // 다음 카드: 뒤에서 앞으로 오며 등장
+    tl.to(
+      nextCard,
+      {
+        xPercent: 0,
+        y: 0,
+        z: 0,
+        rotateY: 0,
+        rotateZ: 0,
+        scale: 1,
+        opacity: 1,
+        zIndex: 40,
+        pointerEvents: "auto",
+        force3D: true,
+      },
+      0.04
+    );
   };
 
   const goToSection = (nextIndex: number) => {
@@ -145,12 +357,7 @@ export default function Home() {
       window.setTimeout(() => {
         currentProjectCardRef.current = homeProjectCards.length - 1;
         setCurrentProjectCard(homeProjectCards.length - 1);
-
-        if (projectTrackRef.current) {
-          gsap.set(projectTrackRef.current, {
-            xPercent: -((homeProjectCards.length - 1) * 100),
-          });
-        }
+        setProjectCardsImmediately(homeProjectCards.length - 1);
       }, 980);
 
       return;
@@ -167,13 +374,19 @@ export default function Home() {
       currentProjectCardRef.current = 0;
       setCurrentProjectCard(0);
 
-      if (projectTrackRef.current) {
-        gsap.set(projectTrackRef.current, { xPercent: 0 });
-      }
+      window.requestAnimationFrame(() => {
+        setProjectCardsImmediately(0);
+      });
     }
 
     goToSection(nextIndex);
   };
+
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      setProjectCardsImmediately(0);
+    });
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

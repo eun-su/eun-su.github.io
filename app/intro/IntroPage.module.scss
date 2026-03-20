@@ -1,0 +1,61 @@
+.introSectionCopy {
+  position: relative;
+  z-index: 6;
+}
+
+.IntroSection5Email {
+  position: relative;
+  z-index: 6;
+}
+
+.orbOrigin {
+  top: -48px;
+  left: -48px;
+}
+
+.orbObserve {
+  top: 10%;
+  right: -8%;
+}
+
+.orbOrganize {
+  bottom: -8%;
+  left: 18%;
+}
+
+.orbOpen {
+  top: -10%;
+  right: 4%;
+}
+
+.orbContact {
+  top: -14%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 1023px) {
+  .orbOrigin {
+    top: -28px;
+    left: -20px;
+  }
+
+  .orbObserve {
+    top: 6%;
+    right: -2%;
+  }
+
+  .orbOrganize {
+    bottom: -4%;
+    left: 10%;
+  }
+
+  .orbOpen {
+    top: -6%;
+    right: 0;
+  }
+
+  .orbContact {
+    top: -10%;
+  }
+}
