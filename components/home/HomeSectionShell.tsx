@@ -25,9 +25,11 @@ export default function HomeSectionShell({
       className={`${styles.section} ${className}`.trim()}
     >
       <div className={styles.sectionInner}>
-        <div className={styles.sectionTop}>
-          <p className={styles.eyebrow}>{eyebrow}</p>
-        </div>
+        {eyebrow ? (
+          <div className={styles.sectionTop}>
+            <p className={styles.eyebrow}>{eyebrow}</p>
+          </div>
+        ) : null}
 
         {children}
 

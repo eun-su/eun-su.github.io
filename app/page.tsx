@@ -3,15 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Header from "@/components/Header";
-import { usePageTheme } from "@/hooks/usePageTheme";
-import { homeProjectCards, homeSections } from "@/data/homeSections";
-import HomeSectionShell from "@/components/home/HomeSectionShell";
 import HomeSectionRenderer from "@/components/home/HomeSectionRenderer";
+import HomeSectionShell from "@/components/home/HomeSectionShell";
+import { homeProjectCards, homeSections } from "@/data/homeSections";
+import { usePageTheme } from "@/hooks/usePageTheme";
 import styles from "./HomePage.module.scss";
 
 const WHEEL_THRESHOLD = 45;
 const WHEEL_IDLE_RESET_MS = 160;
 const POST_ANIMATION_COOLDOWN_MS = 120;
+const CARD_SWIPE_THRESHOLD = 50;
+const CARD_TRANSITION_COOLDOWN_MS = 420;
+const CARDS_SECTION_INDEX = homeSections.findIndex((section) => section.mode === "cards");
 
 export default function Home() {
   usePageTheme("home");
@@ -21,16 +24,18 @@ export default function Home() {
   const projectTrackRef = useRef<HTMLDivElement | null>(null);
 
   const currentSectionRef = useRef(0);
-  const currentProjectCardRef = useRef(0);
-
   const isAnimatingRef = useRef(false);
-  const touchStartYRef = useRef<number | null>(null);
   const wheelAccumulatorRef = useRef(0);
   const wheelResetTimerRef = useRef<number | null>(null);
   const lockUntilRef = useRef(0);
 
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
   const [currentSection, setCurrentSection] = useState(0);
   const [currentProjectCard, setCurrentProjectCard] = useState(0);
+
+  const maxProjectCardIndex = Math.max(homeProjectCards.length - 1, 0);
 
   const resetWheelAccumulator = () => {
     wheelAccumulatorRef.current = 0;
@@ -54,353 +59,153 @@ export default function Home() {
 
   const triggerPageTransition = (href?: string) => {
     if (!href) return;
-
-    window.dispatchEvent(
-      new CustomEvent("app:navigate", {
-        detail: { href },
-      })
-    );
+    window.dispatchEvent(new CustomEvent("app:navigate", { detail: { href } }));
   };
 
-  const getProjectCards = () => {
-    if (!projectTrackRef.current) return [];
-    return Array.from(
-      projectTrackRef.current.querySelectorAll<HTMLElement>("[data-project-card]")
-    );
-  };
+  const syncProjectTrack = (nextCardIndex: number, instant = false) => {
+    const track = projectTrackRef.current;
+    if (!track) return;
 
-  /**
-   * 정지 상태 기준 포즈
-   * - active만 보임
-   * - 나머지는 뒤에 있으면서 opacity 0
-   */
-  const getRestPose = (cardIndex: number, activeIndex: number) => {
-    const delta = cardIndex - activeIndex;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-project-card]"));
+    if (!cards.length) return;
 
-    if (delta === 0) {
-      return {
-        xPercent: 0,
-        y: 0,
-        z: 0,
-        rotateY: 0,
+    cards.forEach((card, index) => {
+      const offset = index - nextCardIndex;
+      const abs = Math.abs(offset);
+      const hidden = abs > 2;
+      const x = offset * 168;
+      const y = abs * 12;
+      const z = offset === 0 ? 0 : -abs * 180;
+      const scale = offset === 0 ? 1 : Math.max(0.84, 1 - abs * 0.08);
+      const rotateY = offset === 0 ? 0 : offset > 0 ? -14 : 14;
+      const opacity = hidden ? 0 : offset === 0 ? 1 : abs === 1 ? 0.72 : 0.3;
+      const body = card.querySelector<HTMLElement>("[class*='projectCardBody']");
+
+      gsap.killTweensOf(card);
+      gsap.to(card, {
+        x,
+        y,
+        z,
+        scale,
+        opacity,
+        rotateY,
         rotateZ: 0,
-        scale: 1,
-        opacity: 1,
-        zIndex: 40,
-      };
-    }
-
-    if (delta > 0) {
-      return {
-        xPercent: 14,
-        y: 14,
-        z: -260,
-        rotateY: -24,
-        rotateZ: -1.2,
-        scale: 0.94,
-        opacity: 0,
-        zIndex: 10,
-      };
-    }
-
-    return {
-      xPercent: -14,
-      y: 14,
-      z: -260,
-      rotateY: 24,
-      rotateZ: 1.2,
-      scale: 0.94,
-      opacity: 0,
-      zIndex: 10,
-    };
-  };
-
-  /**
-   * 전환 직전 다음/이전 카드가 잠깐 보일 때의 pose
-   * activeIndex로 바로 두지 않고, entering 방향에 따라 시작 포즈를 잡습니다.
-   */
-  const getEnteringPose = (direction: 1 | -1) => {
-    if (direction === 1) {
-      return {
-        xPercent: 18,
-        y: 18,
-        z: -220,
-        rotateY: -28,
-        rotateZ: -1.6,
-        scale: 0.93,
-        opacity: 0,
-        zIndex: 30,
-      };
-    }
-
-    return {
-      xPercent: -18,
-      y: 18,
-      z: -220,
-      rotateY: 28,
-      rotateZ: 1.6,
-      scale: 0.93,
-      opacity: 0,
-      zIndex: 30,
-    };
-  };
-
-  const getExitingPose = (direction: 1 | -1) => {
-    if (direction === 1) {
-      return {
-        xPercent: -16,
-        y: 18,
-        z: -180,
-        rotateY: 20,
-        rotateZ: 1.2,
-        scale: 0.94,
-        opacity: 0,
-        zIndex: 20,
-      };
-    }
-
-    return {
-      xPercent: 16,
-      y: 18,
-      z: -180,
-      rotateY: -20,
-      rotateZ: -1.2,
-      scale: 0.94,
-      opacity: 0,
-      zIndex: 20,
-    };
-  };
-
-  const setProjectCardsImmediately = (activeIndex: number) => {
-    const cards = getProjectCards();
-    if (!cards.length) return;
-
-    cards.forEach((card, index) => {
-      const pose = getRestPose(index, activeIndex);
-
-      gsap.set(card, {
-        xPercent: pose.xPercent,
-        y: pose.y,
-        z: pose.z,
-        rotateY: pose.rotateY,
-        rotateZ: pose.rotateZ,
-        scale: pose.scale,
-        opacity: pose.opacity,
-        zIndex: pose.zIndex,
-        transformOrigin: "center center",
-        pointerEvents: index === activeIndex ? "auto" : "none",
-        force3D: true,
+        zIndex: 100 - abs,
+        duration: instant ? 0 : 0.58,
+        ease: instant ? "none" : "power3.inOut",
+        overwrite: true,
       });
-    });
-  };
 
-  const animateProjectCards = (nextCardIndex: number) => {
-    const cards = getProjectCards();
-    if (!cards.length) return;
-
-    const prevCardIndex = currentProjectCardRef.current;
-    const direction: 1 | -1 = nextCardIndex > prevCardIndex ? 1 : -1;
-
-    const prevCard = cards[prevCardIndex];
-    const nextCard = cards[nextCardIndex];
-
-    if (!prevCard || !nextCard) return;
-
-    isAnimatingRef.current = true;
-    resetWheelAccumulator();
-
-    const enteringPose = getEnteringPose(direction);
-    const exitingPose = getExitingPose(direction);
-
-    // 들어올 카드는 뒤쪽에서 완전 투명 상태로 시작
-    gsap.set(nextCard, {
-      xPercent: enteringPose.xPercent,
-      y: enteringPose.y,
-      z: enteringPose.z,
-      rotateY: enteringPose.rotateY,
-      rotateZ: enteringPose.rotateZ,
-      scale: enteringPose.scale,
-      opacity: 0,
-      zIndex: 30,
-      pointerEvents: "none",
-      force3D: true,
-    });
-
-    // 나머지 카드는 항상 완전 숨김
-    cards.forEach((card, index) => {
-      if (index !== prevCardIndex && index !== nextCardIndex) {
-        const hiddenPose = getRestPose(index, nextCardIndex);
-        gsap.set(card, {
-          xPercent: hiddenPose.xPercent,
-          y: hiddenPose.y,
-          z: hiddenPose.z,
-          rotateY: hiddenPose.rotateY,
-          rotateZ: hiddenPose.rotateZ,
-          scale: hiddenPose.scale,
-          opacity: 0,
-          zIndex: 10,
-          pointerEvents: "none",
-          force3D: true,
+      if (body) {
+        gsap.killTweensOf(body);
+        gsap.to(body, {
+          opacity: offset === 0 ? 1 : 0,
+          y: offset === 0 ? 0 : 10,
+          duration: instant ? 0 : 0.28,
+          ease: instant ? "none" : "power2.out",
+          overwrite: true,
         });
       }
     });
-
-    const tl = gsap.timeline({
-      defaults: {
-        duration: 0.82,
-        ease: "power3.inOut",
-      },
-      onComplete: () => {
-        currentProjectCardRef.current = nextCardIndex;
-        setCurrentProjectCard(nextCardIndex);
-        setProjectCardsImmediately(nextCardIndex);
-        isAnimatingRef.current = false;
-        lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
-      },
-    });
-
-    // 현재 카드: 앞으로 있던 상태에서 뒤로 빠지며 사라짐
-    tl.to(
-      prevCard,
-      {
-        xPercent: exitingPose.xPercent,
-        y: exitingPose.y,
-        z: exitingPose.z,
-        rotateY: exitingPose.rotateY,
-        rotateZ: exitingPose.rotateZ,
-        scale: exitingPose.scale,
-        opacity: 0,
-        zIndex: 20,
-        pointerEvents: "none",
-        force3D: true,
-      },
-      0
-    );
-
-    // 다음 카드: 뒤에서 앞으로 오며 등장
-    tl.to(
-      nextCard,
-      {
-        xPercent: 0,
-        y: 0,
-        z: 0,
-        rotateY: 0,
-        rotateZ: 0,
-        scale: 1,
-        opacity: 1,
-        zIndex: 40,
-        pointerEvents: "auto",
-        force3D: true,
-      },
-      0.04
-    );
   };
 
-  const goToSection = (nextIndex: number) => {
+  const goToProjectCard = (nextCardIndex: number, instant = false) => {
+    const clampedIndex = Math.max(0, Math.min(maxProjectCardIndex, nextCardIndex));
+    setCurrentProjectCard(clampedIndex);
+    lockUntilRef.current = Date.now() + (instant ? 0 : CARD_TRANSITION_COOLDOWN_MS);
+    syncProjectTrack(clampedIndex, instant);
+  };
+
+  const goToSection = (nextIndex: number, instant = false) => {
     const container = containerRef.current;
     const targetSection = sectionRefs.current[nextIndex];
 
     if (!container || !targetSection) return;
     if (nextIndex < 0 || nextIndex >= homeSections.length) return;
-    if (isAnimatingRef.current) return;
-    if (nextIndex === currentSectionRef.current) return;
+    if (!instant && isAnimatingRef.current) return;
+    if (!instant && nextIndex === currentSectionRef.current) return;
+
+    const targetOffset = targetSection.offsetTop;
 
     isAnimatingRef.current = true;
     resetWheelAccumulator();
-
     gsap.killTweensOf(container);
 
     gsap.to(container, {
-      scrollTop: targetSection.offsetTop,
-      duration: 0.95,
-      ease: "power3.inOut",
+      scrollTop: targetOffset,
+      duration: instant ? 0 : 0.96,
+      ease: instant ? "none" : "power2.inOut",
       onComplete: () => {
+        container.scrollTop = targetOffset;
         currentSectionRef.current = nextIndex;
         setCurrentSection(nextIndex);
         isAnimatingRef.current = false;
         lockUntilRef.current = Date.now() + POST_ANIMATION_COOLDOWN_MS;
+
+        const nextId = homeSections[nextIndex]?.id;
+        if (nextId) {
+          history.replaceState(null, "", `/#${nextId}`);
+        }
       },
     });
   };
 
   const handleForward = () => {
-    const currentSectionIndex = currentSectionRef.current;
-    const currentSectionData = homeSections[currentSectionIndex];
-
-    if (currentSectionData.id === "project-board") {
-      if (currentProjectCardRef.current < homeProjectCards.length - 1) {
-        animateProjectCards(currentProjectCardRef.current + 1);
-        return;
-      }
-    }
-
-    goToSection(currentSectionIndex + 1);
-  };
-
-  const handleBackward = () => {
-    const currentSectionIndex = currentSectionRef.current;
-    const currentSectionData = homeSections[currentSectionIndex];
-
-    if (currentSectionData.id === "project-board") {
-      if (currentProjectCardRef.current > 0) {
-        animateProjectCards(currentProjectCardRef.current - 1);
-        return;
-      }
-    }
-
-    if (
-      currentSectionIndex === 2 &&
-      homeSections[currentSectionIndex - 1]?.id === "project-board"
-    ) {
-      goToSection(1);
-
-      window.setTimeout(() => {
-        currentProjectCardRef.current = homeProjectCards.length - 1;
-        setCurrentProjectCard(homeProjectCards.length - 1);
-        setProjectCardsImmediately(homeProjectCards.length - 1);
-      }, 980);
-
+    if (currentSectionRef.current === CARDS_SECTION_INDEX && currentProjectCard < maxProjectCardIndex) {
+      goToProjectCard(currentProjectCard + 1);
       return;
     }
 
-    goToSection(currentSectionIndex - 1);
+    goToSection(currentSectionRef.current + 1);
+  };
+
+  const handleBackward = () => {
+    if (currentSectionRef.current === CARDS_SECTION_INDEX && currentProjectCard > 0) {
+      goToProjectCard(currentProjectCard - 1);
+      return;
+    }
+
+    goToSection(currentSectionRef.current - 1);
   };
 
   const handleNavigateById = (sectionId: string) => {
     const nextIndex = homeSections.findIndex((section) => section.id === sectionId);
     if (nextIndex === -1) return;
-
-    if (sectionId === "project-board") {
-      currentProjectCardRef.current = 0;
-      setCurrentProjectCard(0);
-
-      window.requestAnimationFrame(() => {
-        setProjectCardsImmediately(0);
-      });
-    }
-
     goToSection(nextIndex);
   };
 
   useEffect(() => {
+    const initialHash = window.location.hash.replace("#", "");
+    const initialIndex = homeSections.findIndex((section) => section.id === initialHash);
+
     window.requestAnimationFrame(() => {
-      setProjectCardsImmediately(0);
+      if (initialIndex >= 0) {
+        goToSection(initialIndex, true);
+      } else {
+        goToSection(0, true);
+      }
+
+      goToProjectCard(0, true);
     });
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      syncProjectTrack(currentProjectCard, true);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [currentProjectCard]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (window.innerWidth < 768) return;
-
-      if (Date.now() < lockUntilRef.current) {
-        e.preventDefault();
-        return;
-      }
-
-      if (isAnimatingRef.current) {
+      if (Date.now() < lockUntilRef.current || isAnimatingRef.current) {
         e.preventDefault();
         return;
       }
@@ -415,20 +220,14 @@ export default function Home() {
 
       const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
       resetWheelAccumulator();
-
       e.preventDefault();
 
-      if (direction > 0) {
-        handleForward();
-      } else {
-        handleBackward();
-      }
+      if (direction > 0) handleForward();
+      else handleBackward();
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (window.innerWidth < 768) return;
-      if (Date.now() < lockUntilRef.current) return;
-      if (isAnimatingRef.current) return;
+      if (Date.now() < lockUntilRef.current || isAnimatingRef.current) return;
 
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
@@ -440,9 +239,23 @@ export default function Home() {
         handleBackward();
       }
 
+      if (e.key === "ArrowRight" && currentSectionRef.current === CARDS_SECTION_INDEX) {
+        e.preventDefault();
+        if (currentProjectCard < maxProjectCardIndex) {
+          goToProjectCard(currentProjectCard + 1);
+        }
+      }
+
+      if (e.key === "ArrowLeft" && currentSectionRef.current === CARDS_SECTION_INDEX) {
+        e.preventDefault();
+        if (currentProjectCard > 0) {
+          goToProjectCard(currentProjectCard - 1);
+        }
+      }
+
       if (e.key === "Home") {
         e.preventDefault();
-        handleNavigateById("hero");
+        handleNavigateById(homeSections[0].id);
       }
 
       if (e.key === "End") {
@@ -452,85 +265,105 @@ export default function Home() {
     };
 
     const handleTouchStart = (e: TouchEvent) => {
+      touchStartXRef.current = e.touches[0].clientX;
       touchStartYRef.current = e.touches[0].clientY;
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (window.innerWidth >= 768) return;
-      if (Date.now() < lockUntilRef.current) return;
-      if (isAnimatingRef.current) return;
-      if (touchStartYRef.current === null) return;
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+    };
 
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (Date.now() < lockUntilRef.current || isAnimatingRef.current) return;
+      if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+
+      const endX = e.changedTouches[0].clientX;
       const endY = e.changedTouches[0].clientY;
+
+      const deltaX = touchStartXRef.current - endX;
       const deltaY = touchStartYRef.current - endY;
 
-      if (Math.abs(deltaY) < 50) return;
+      touchStartXRef.current = null;
+      touchStartYRef.current = null;
 
-      if (deltaY > 0) {
-        handleForward();
-      } else {
-        handleBackward();
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+
+      if (
+        currentSectionRef.current === CARDS_SECTION_INDEX &&
+        absX > absY &&
+        absX > CARD_SWIPE_THRESHOLD
+      ) {
+        if (deltaX > 0 && currentProjectCard < maxProjectCardIndex) {
+          goToProjectCard(currentProjectCard + 1);
+          return;
+        }
+
+        if (deltaX < 0 && currentProjectCard > 0) {
+          goToProjectCard(currentProjectCard - 1);
+          return;
+        }
       }
+
+      if (absY < 50) return;
+
+      if (deltaY > 0) handleForward();
+      else handleBackward();
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
     container.addEventListener("touchstart", handleTouchStart, { passive: true });
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
     container.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       container.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
       container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
       container.removeEventListener("touchend", handleTouchEnd);
 
       if (wheelResetTimerRef.current) {
         window.clearTimeout(wheelResetTimerRef.current);
       }
     };
-  }, []);
+  }, [currentProjectCard, maxProjectCardIndex]);
 
   return (
     <main className={styles.main}>
       <Header onNavigate={handleNavigateById} />
 
       <div ref={containerRef} id="top" className={styles.container}>
-        {homeSections.map((section, index) => {
-          const isProjectSection = section.id === "project-board";
-
-          return (
-            <HomeSectionShell
-              key={section.id}
-              id={section.id}
-              eyebrow={section.eyebrow}
-              sectionNumber={`${String(index + 1).padStart(2, "0")} / ${String(
-                homeSections.length
-              ).padStart(2, "0")}`}
-              className={isProjectSection ? styles.sectionProject : ""}
-              sectionRef={(el) => {
-                sectionRefs.current[index] = el;
-              }}
-            >
-              <HomeSectionRenderer
-                section={section}
-                cards={homeProjectCards}
-                currentProjectCard={currentProjectCard}
-                projectTrackRef={projectTrackRef}
-                onCtaClick={triggerPageTransition}
-              />
-            </HomeSectionShell>
-          );
-        })}
+        {homeSections.map((section, index) => (
+          <HomeSectionShell
+            key={section.id}
+            id={section.id}
+            eyebrow={section.mode === "cover" ? "" : section.eyebrow}
+            sectionNumber={`${String(index + 1).padStart(2, "0")} / ${String(
+              homeSections.length
+            ).padStart(2, "0")}`}
+            className={index === currentSection ? styles.sectionActive : ""}
+            sectionRef={(el) => {
+              sectionRefs.current[index] = el;
+            }}
+          >
+            <HomeSectionRenderer
+              section={section}
+              cards={homeProjectCards}
+              currentProjectCard={currentProjectCard}
+              projectTrackRef={projectTrackRef}
+              onCtaClick={triggerPageTransition}
+            />
+          </HomeSectionShell>
+        ))}
       </div>
 
       <div className={styles.progressPill}>
-        {currentSection === 1
-          ? `${String(currentSection + 1).padStart(2, "0")}-${String(
-              currentProjectCard + 1
-            ).padStart(2, "0")}`
-          : `${String(currentSection + 1).padStart(2, "0")} / ${String(
-              homeSections.length
-            ).padStart(2, "0")}`}
+        {`${String(currentSection + 1).padStart(2, "0")} / ${String(homeSections.length).padStart(
+          2,
+          "0"
+        )}`}
       </div>
     </main>
   );

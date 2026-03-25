@@ -1,0 +1,46 @@
+.cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.symbolStage {
+  position: relative;
+  width: min(92vw, 1120px);
+  height: min(68vh, 720px);
+  overflow: visible;
+}
+
+.symbolGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+.symbolWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.95;
+}
+
+.symbolSvg {
+  width: clamp(88px, 11vw, 156px);
+  height: clamp(58px, 7vw, 104px);
+  overflow: visible;
+}
+
+.symbolStroke {
+  fill: none;
+  stroke: var(--page-text);
+  stroke-width: 20;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  @media (max-width: 767px) {
+    stroke-width: 16;
+  }
+}

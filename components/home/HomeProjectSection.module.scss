@@ -1,0 +1,84 @@
+.projectLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.8rem;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    gap: 2.4rem;
+  }
+}
+
+.projectLabelBox {
+  display: grid;
+  gap: 0.95rem;
+  align-content: start;
+}
+
+.indexLabel,
+.tagItem,
+.detailIndex {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.indexLabel,
+.detailIndex {
+  color: var(--page-text-muted);
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tagItem {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.1rem;
+  padding: 0.58rem 0.86rem;
+  border: 1px solid var(--page-line);
+  border-radius: 9999px;
+  background: var(--page-card);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5.8vw, 5rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.desc {
+  max-width: 46rem;
+  margin: 1.35rem 0 0;
+  color: var(--page-text-muted);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.95rem;
+  margin-top: 1.8rem;
+}
+
+.detailCard {
+  min-height: 10.5rem;
+  padding: 1.1rem;
+  border: 1px solid var(--page-line);
+  border-radius: 1.4rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--page-card) 92%, white), var(--page-card));
+}
+
+.detailText {
+  margin: 1rem 0 0;
+  line-height: 1.8;
+}

@@ -14,11 +14,11 @@ const menuPages = [
 ];
 
 const indexSections = [
-  { id: "hero", label: "Intro" },
-  { id: "project-board", label: "Board" },
-  { id: "project-renewal", label: "Renewal" },
-  { id: "build-tuning", label: "Build" },
-  { id: "design-works", label: "Design" },
+  { id: "cover", label: "Cover" },
+  { id: "intro", label: "Intro" },
+  { id: "work-cards", label: "Works" },
+  { id: "design", label: "Design" },
+  { id: "marketing", label: "Marketing" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -313,7 +313,7 @@ export default function Header({ onNavigate }: HeaderProps) {
               type="button"
               onClick={() => {
                 if (isHome) {
-                  handleSectionClick("hero");
+                  handleSectionClick("cover");
                 } else {
                   triggerPageTransition("/");
                 }

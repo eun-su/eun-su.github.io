@@ -1,4 +1,10 @@
-export type HomeSectionMode = "hero" | "normal" | "cards";
+export type HomeSectionMode =
+  | "cover"
+  | "intro"
+  | "cards"
+  | "design"
+  | "marketing"
+  | "contact";
 
 export type MainSection = {
   id: string;
@@ -6,10 +12,12 @@ export type MainSection = {
   eyebrow: string;
   title: string;
   desc: string;
-  meta?: string[];
-  ctaLabel?: string;
-  ctaHref?: string;
   mode: HomeSectionMode;
+  highlight?: string;
+  tags?: string[];
+  bullets?: string[];
+  stats?: Array<{ label: string; value: string }>;
+  links?: Array<{ label: string; href: string }>;
 };
 
 export type ProjectCard = {

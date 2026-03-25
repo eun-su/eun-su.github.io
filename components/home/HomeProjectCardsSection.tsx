@@ -36,19 +36,18 @@ export default function HomeProjectCardsSection({
                 index === currentProjectCard ? styles.projectCardActive : ""
               }`}
             >
-              <div className={styles.projectCardStep}>{card.step}</div>
-
-              <h3 className={styles.projectCardTitle}>{card.title}</h3>
-
-              <p className={styles.projectCardDesc}>{card.desc}</p>
-
-              <ul className={styles.metaList}>
-                {card.meta.map((item) => (
-                  <li key={item} className={styles.metaItem}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <div className={styles.projectCardBody}>
+                <div className={styles.projectCardStep}>{card.step}</div>
+                <h3 className={styles.projectCardTitle}>{card.title}</h3>
+                <p className={styles.projectCardDesc}>{card.desc}</p>
+                <ul className={styles.metaList}>
+                  {card.meta.map((item) => (
+                    <li key={item} className={styles.metaItem}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </article>
           ))}
         </div>
@@ -56,9 +55,12 @@ export default function HomeProjectCardsSection({
 
       <div className={styles.projectProgress}>
         <span>
-          {String(currentProjectCard + 1).padStart(2, "0")} /{" "}
+          {String(currentProjectCard + 1).padStart(2, "0")} / {" "}
           {String(cards.length).padStart(2, "0")}
         </span>
+        <p className={styles.projectHint}>
+          Desktop: wheel / ↑↓ / ←→ · Mobile: swipe up/down and left/right
+        </p>
       </div>
     </div>
   );

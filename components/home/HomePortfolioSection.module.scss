@@ -1,0 +1,72 @@
+.portfolioLayout {
+  display: grid;
+  gap: 1.7rem;
+}
+
+.headerRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 1080px) {
+    grid-template-columns: minmax(80px, 120px) minmax(0, 1fr);
+  }
+}
+
+.indexLabel,
+.cardIndex {
+  color: var(--page-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 5.4vw, 4.8rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.desc {
+  max-width: 48rem;
+  margin: 1.25rem 0 0;
+  color: var(--page-text-muted);
+  line-height: 1.9;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.95rem;
+}
+
+.card {
+  padding: 1.1rem;
+  min-height: 11rem;
+  border: 1px solid var(--page-line);
+  border-radius: 1.4rem;
+  background: var(--page-card);
+}
+
+.cardText {
+  margin: 1rem 0 0;
+  line-height: 1.8;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  width: fit-content;
+  padding: 0.92rem 1.2rem;
+  border: 1px solid var(--button-border);
+  border-radius: 9999px;
+  background: var(--button-bg);
+  color: var(--button-text);
+  cursor: pointer;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

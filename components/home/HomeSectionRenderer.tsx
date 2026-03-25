@@ -1,6 +1,9 @@
-import HomeHeroSection from "./HomeHeroSection";
+import HomeContactSection from "./HomeContactSection";
+import HomeCoverSection from "./HomeCoverSection";
+import HomeDesignSection from "./HomeDesignSection";
+import HomeIntroSection from "./HomeIntroSection";
+import HomePortfolioSection from "./HomePortfolioSection";
 import HomeProjectCardsSection from "./HomeProjectCardsSection";
-import HomeTextSection from "./HomeTextSection";
 import type { MainSection, ProjectCard } from "./home.types";
 
 type HomeSectionRendererProps = {
@@ -18,20 +21,33 @@ export default function HomeSectionRenderer({
   projectTrackRef,
   onCtaClick,
 }: HomeSectionRendererProps) {
-  if (section.mode === "hero") {
-    return <HomeHeroSection section={section} onCtaClick={onCtaClick} />;
-  }
+  switch (section.mode) {
+    case "cover":
+      return <HomeCoverSection section={section} isActive={true} />;
 
-  if (section.mode === "cards") {
-    return (
-      <HomeProjectCardsSection
-        section={section}
-        cards={cards}
-        currentProjectCard={currentProjectCard}
-        projectTrackRef={projectTrackRef}
-      />
-    );
-  }
+    case "intro":
+      return <HomeIntroSection section={section} />;
 
-  return <HomeTextSection section={section} onCtaClick={onCtaClick} />;
+    case "cards":
+      return (
+        <HomeProjectCardsSection
+          section={section}
+          cards={cards}
+          currentProjectCard={currentProjectCard}
+          projectTrackRef={projectTrackRef}
+        />
+      );
+
+    case "design":
+      return <HomeDesignSection section={section} onLinkClick={onCtaClick} />;
+
+    case "marketing":
+      return <HomePortfolioSection section={section} onLinkClick={onCtaClick} />;
+
+    case "contact":
+      return <HomeContactSection section={section} />;
+
+    default:
+      return null;
+  }
 }
