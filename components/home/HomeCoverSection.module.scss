@@ -9,7 +9,7 @@
 
 .symbolStage {
   position: relative;
-  top:-30px;
+  top: -30px;
   width: min(94vw, 1024px);
   height: min(100vh, 668px);
   padding:
@@ -55,11 +55,12 @@
   width: 100%;
   height: 100%;
   will-change: transform;
-  animation: orbitRoute 35.8s infinite both;
+  animation: orbitRoute var(--route-duration) infinite both;
   animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
 .symbolFloat {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,34 +81,56 @@
     drop-shadow(0 8px 10px rgba(0, 0, 0, 0.08));
 }
 
+.symbolLabel {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.9rem);
+  transform: translateY(-50%) translateX(-8px);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 4vw;
+  line-height: 1;
+  font-family: inherit;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: rgba(20, 20, 20, 0.88);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.24s ease;
+}
+
+.symbolLabelVisible {
+  transform: translateY(-50%) translateX(0);
+}
+
 .symbolO {
   .symbolImage {
-    width: clamp(96px, 11vw, 100px);
+    width: clamp(96px, 11vw, 96px);
   }
 }
 
 .symbolDash {
   .symbolImage {
-    width: clamp(92px, 10.6vw, 100px);
+    width: clamp(92px, 10.6vw, 96px);
   }
 }
 
 .symbolL {
   .symbolImage {
-    width: clamp(96px, 11vw, 100px);
-
+    width: clamp(96px, 11vw, 96px);
   }
 }
 
 .symbolA {
   .symbolImage {
-    width: clamp(96px, 11vw, 100px);
+    width: clamp(96px, 11vw, 96px);
   }
 }
 
 .symbolT {
   .symbolImage {
-    width: clamp(96px, 11vw, 100px);
+    width: clamp(96px, 11vw, 96px);
   }
 }
 
@@ -117,40 +140,32 @@
   right: 0;
   bottom: clamp(0.9rem, 1.4vw, 1.35rem);
   z-index: 2;
-  overflow: hidden;
   pointer-events: none;
-}
-
-.captionTrack {
   display: flex;
-  width: max-content;
-  min-width: 200%;
-  margin: 0;
-  white-space: nowrap;
-  will-change: transform;
-  animation: coverMarqueeLoop 16s linear infinite;
+  justify-content: center;
 }
 
-.captionItem {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  padding-right: 4rem;
+.captionText {
+  margin: 0;
   font-size: clamp(0.76rem, 0.9vw, 0.98rem);
   line-height: 1;
   letter-spacing: 0.16em;
   color: rgba(16, 16, 16, 0.74);
+  text-align: center;
 }
 
 .symbolStage[data-active="false"] {
   .symbolRoute,
-  .symbolFloat,
-  .captionTrack {
+  .symbolFloat {
     animation-play-state: paused;
   }
 
   .symbolFloat {
     opacity: 0.9;
+  }
+
+  .symbolLabel {
+    opacity: 0;
   }
 }
 
@@ -172,58 +187,48 @@
 
 @keyframes orbitRoute {
   0%,
-  8.3799% {
+  9.7276% {
     transform: translate3d(var(--p0x), var(--p0y), 0);
   }
 
-  11.4525%,
-  19.8324% {
+  11.284%,
+  21.0117% {
     transform: translate3d(var(--p1x), var(--p1y), 0);
   }
 
-  22.905%,
-  31.2849% {
+  22.5681%,
+  32.2957% {
     transform: translate3d(var(--p2x), var(--p2y), 0);
   }
 
-  34.3575%,
-  42.7374% {
+  33.8521%,
+  43.5798% {
     transform: translate3d(var(--p3x), var(--p3y), 0);
   }
 
-  45.8101%,
-  54.1899% {
+  45.1362%,
+  54.8638% {
     transform: translate3d(var(--p4x), var(--p4y), 0);
   }
 
-  57.2626%,
-  65.6425% {
+  56.4202%,
+  66.1479% {
     transform: translate3d(var(--p5x), var(--p5y), 0);
   }
 
-  68.7151%,
-  77.095% {
+  67.7043%,
+  77.4319% {
     transform: translate3d(var(--p6x), var(--p6y), 0);
   }
 
-  80.1676%,
-  88.5475% {
+  78.9883%,
+  88.716% {
     transform: translate3d(var(--p7x), var(--p7y), 0);
   }
 
-  91.6201%,
+  90.2724%,
   100% {
     transform: translate3d(var(--p8x), var(--p8y), 0);
-  }
-}
-
-@keyframes coverMarqueeLoop {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
   }
 }
 
@@ -241,9 +246,12 @@
       4.2rem;
   }
 
-  .captionItem {
+  .symbolLabel {
+    left: calc(100% + 0.7rem);
+  }
+
+  .captionText {
     font-size: clamp(0.72rem, 1.2vw, 0.88rem);
-    padding-right: 3rem;
   }
 }
 
@@ -291,21 +299,27 @@
     }
   }
 
+  .symbolLabel {
+    left: calc(100% + 0.55rem);
+  }
+
   .captionViewport {
     bottom: 0.65rem;
   }
 
-  .captionItem {
+  .captionText {
     font-size: 0.66rem;
     letter-spacing: 0.12em;
-    padding-right: 2rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .symbolRoute,
-  .symbolFloat,
-  .captionTrack {
+  .symbolFloat {
     animation: none !important;
+  }
+
+  .symbolLabel {
+    transition: none;
   }
 }
