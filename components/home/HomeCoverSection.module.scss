@@ -3,44 +3,309 @@
   align-items: center;
   justify-content: center;
   min-height: 100%;
+  padding: clamp(1.2rem, 2.6vw, 2.8rem);
+  box-sizing: border-box;
 }
 
 .symbolStage {
   position: relative;
-  width: min(92vw, 1120px);
-  height: min(68vh, 720px);
-  overflow: visible;
+  top:-30px;
+  width: min(94vw, 1024px);
+  height: min(100vh, 668px);
+  padding:
+    clamp(1.4rem, 2.8vw, 2.8rem)
+    clamp(1.3rem, 2.8vw, 2.8rem)
+    clamp(4.4rem, 8vw, 5.8rem);
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 4% 6% 12%;
+    background:
+      radial-gradient(circle at 22% 22%, rgba(255, 255, 255, 0.12), transparent 26%),
+      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 32%),
+      radial-gradient(circle at 78% 76%, rgba(0, 0, 0, 0.06), transparent 28%);
+    filter: blur(34px);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
 .symbolGrid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
   width: 100%;
   height: 100%;
 }
 
 .symbolWrap {
+  width: 100%;
+  height: 100%;
+}
+
+.symbolRoute {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.95;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: orbitRoute 35.8s infinite both;
+  animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 }
 
-.symbolSvg {
-  width: clamp(88px, 11vw, 156px);
-  height: clamp(58px, 7vw, 104px);
-  overflow: visible;
+.symbolFloat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.96;
+  will-change: transform;
+  animation: coverFloat var(--float-duration) ease-in-out infinite;
+  animation-delay: var(--float-delay);
 }
 
-.symbolStroke {
-  fill: none;
-  stroke: var(--page-text);
-  stroke-width: 20;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.symbolImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 16px 22px rgba(0, 0, 0, 0.12))
+    drop-shadow(0 8px 10px rgba(0, 0, 0, 0.08));
+}
 
-  @media (max-width: 767px) {
-    stroke-width: 16;
+.symbolO {
+  .symbolImage {
+    width: clamp(96px, 11vw, 100px);
+  }
+}
+
+.symbolDash {
+  .symbolImage {
+    width: clamp(92px, 10.6vw, 100px);
+  }
+}
+
+.symbolL {
+  .symbolImage {
+    width: clamp(96px, 11vw, 100px);
+
+  }
+}
+
+.symbolA {
+  .symbolImage {
+    width: clamp(96px, 11vw, 100px);
+  }
+}
+
+.symbolT {
+  .symbolImage {
+    width: clamp(96px, 11vw, 100px);
+  }
+}
+
+.captionViewport {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(0.9rem, 1.4vw, 1.35rem);
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.captionTrack {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  margin: 0;
+  white-space: nowrap;
+  will-change: transform;
+  animation: coverMarqueeLoop 16s linear infinite;
+}
+
+.captionItem {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 4rem;
+  font-size: clamp(0.76rem, 0.9vw, 0.98rem);
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: rgba(16, 16, 16, 0.74);
+}
+
+.symbolStage[data-active="false"] {
+  .symbolRoute,
+  .symbolFloat,
+  .captionTrack {
+    animation-play-state: paused;
+  }
+
+  .symbolFloat {
+    opacity: 0.9;
+  }
+}
+
+@keyframes coverFloat {
+  0%,
+  100% {
+    transform: translate3d(0, var(--base-y), 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate3d(
+        var(--float-x),
+        calc(var(--base-y) + var(--float-y)),
+        0
+      )
+      rotate(var(--float-rotate));
+  }
+}
+
+@keyframes orbitRoute {
+  0%,
+  8.3799% {
+    transform: translate3d(var(--p0x), var(--p0y), 0);
+  }
+
+  11.4525%,
+  19.8324% {
+    transform: translate3d(var(--p1x), var(--p1y), 0);
+  }
+
+  22.905%,
+  31.2849% {
+    transform: translate3d(var(--p2x), var(--p2y), 0);
+  }
+
+  34.3575%,
+  42.7374% {
+    transform: translate3d(var(--p3x), var(--p3y), 0);
+  }
+
+  45.8101%,
+  54.1899% {
+    transform: translate3d(var(--p4x), var(--p4y), 0);
+  }
+
+  57.2626%,
+  65.6425% {
+    transform: translate3d(var(--p5x), var(--p5y), 0);
+  }
+
+  68.7151%,
+  77.095% {
+    transform: translate3d(var(--p6x), var(--p6y), 0);
+  }
+
+  80.1676%,
+  88.5475% {
+    transform: translate3d(var(--p7x), var(--p7y), 0);
+  }
+
+  91.6201%,
+  100% {
+    transform: translate3d(var(--p8x), var(--p8y), 0);
+  }
+}
+
+@keyframes coverMarqueeLoop {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 1023px) {
+  .cover {
+    padding: 1rem;
+  }
+
+  .symbolStage {
+    width: min(96vw, 1000px);
+    height: min(74vh, 680px);
+    padding:
+      1.1rem
+      1rem
+      4.2rem;
+  }
+
+  .captionItem {
+    font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+    padding-right: 3rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .cover {
+    padding: 0.7rem;
+  }
+
+  .symbolStage {
+    width: min(97vw, 760px);
+    height: min(62vh, 540px);
+    padding:
+      0.9rem
+      0.7rem
+      3.8rem;
+  }
+
+  .symbolO {
+    .symbolImage {
+      width: clamp(64px, 16vw, 102px);
+    }
+  }
+
+  .symbolDash {
+    .symbolImage {
+      width: clamp(60px, 14vw, 92px);
+    }
+  }
+
+  .symbolL {
+    .symbolImage {
+      width: clamp(62px, 15vw, 98px);
+    }
+  }
+
+  .symbolA {
+    .symbolImage {
+      width: clamp(62px, 15vw, 98px);
+    }
+  }
+
+  .symbolT {
+    .symbolImage {
+      width: clamp(62px, 15vw, 98px);
+    }
+  }
+
+  .captionViewport {
+    bottom: 0.65rem;
+  }
+
+  .captionItem {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    padding-right: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .symbolRoute,
+  .symbolFloat,
+  .captionTrack {
+    animation: none !important;
   }
 }
