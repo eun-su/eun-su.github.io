@@ -38,11 +38,17 @@ type SymbolItem = {
   };
 };
 
+type AnnotationTrigger = {
+  symbolKey: string;
+  col: number;
+  row: number;
+};
+
 type AnnotationItem = {
   id: string;
   symbolKey: string;
   text: string;
-  triggerHoldIndex: number;
+  trigger: AnnotationTrigger;
 };
 
 type LabelState = {
@@ -50,13 +56,34 @@ type LabelState = {
   opacity: number;
 };
 
+type NameState = {
+  kim: string;
+  eun: string;
+  su: string;
+};
+
 type MotionStyle = CSSProperties & Record<string, string | number>;
+
+type TimelineState =
+  | {
+      phase: "hold";
+      holdIndex: number;
+      elapsedInHold: number;
+    }
+  | {
+      phase: "move";
+      fromIndex: number;
+      toIndex: number;
+      progress: number;
+    };
 
 const HOLD_SECONDS = 5;
 const MOVE_SECONDS = 0.8;
 const TYPE_SECONDS = 1;
 const FADE_START_SECONDS = 3;
 const FADE_DURATION_SECONDS = 1;
+const DELETE_START_SECONDS = 3;
+const DELETE_DURATION_SECONDS = 1;
 const PATH_POINT_COUNT = 9;
 const ROUTE_TOTAL_SECONDS =
   PATH_POINT_COUNT * HOLD_SECONDS + (PATH_POINT_COUNT - 1) * MOVE_SECONDS;
@@ -204,47 +231,121 @@ const annotations: AnnotationItem[] = [
     id: "origin",
     symbolKey: "o",
     text: "Origin",
-    triggerHoldIndex: 1,
+    trigger: {
+      symbolKey: "o",
+      col: 1,
+      row: 1,
+    },
   },
   {
     id: "layout",
     symbolKey: "l",
     text: "Layout",
-    triggerHoldIndex: 1,
+    trigger: {
+      symbolKey: "o",
+      col: 1,
+      row: 1,
+    },
   },
   {
     id: "aesthetic",
     symbolKey: "a",
     text: "Aesthetic",
-    triggerHoldIndex: 3,
+    trigger: {
+      symbolKey: "t",
+      col: 1,
+      row: 5,
+    },
   },
   {
     id: "technology",
     symbolKey: "t",
     text: "Technology",
-    triggerHoldIndex: 3,
+    trigger: {
+      symbolKey: "t",
+      col: 1,
+      row: 5,
+    },
   },
 ];
 
 function buildMotionVars(item: SymbolItem): MotionStyle {
-  const vars: MotionStyle = {
+  return {
     "--float-duration": item.motion.duration,
     "--float-delay": item.motion.delay,
     "--float-y": item.motion.y,
     "--float-x": item.motion.x,
     "--float-rotate": item.motion.rotate,
     "--base-y": item.motion.baseY,
-    "--route-duration": `${ROUTE_TOTAL_SECONDS}s`,
     gridRow: item.row,
     gridColumn: item.col,
   };
+}
 
-  item.path.forEach((point, index) => {
-    vars[`--p${index}x`] = `${(point.col - item.col) * 100}%`;
-    vars[`--p${index}y`] = `${(point.row - item.row) * 100}%`;
-  });
+function easeInCubic(value: number) {
+  return value * value * value;
+}
 
-  return vars;
+function getTimelineState(elapsedSeconds: number): TimelineState {
+  let time = elapsedSeconds % ROUTE_TOTAL_SECONDS;
+
+  for (let index = 0; index < PATH_POINT_COUNT; index += 1) {
+    if (time < HOLD_SECONDS) {
+      return {
+        phase: "hold",
+        holdIndex: index,
+        elapsedInHold: time,
+      };
+    }
+
+    time -= HOLD_SECONDS;
+
+    if (index === PATH_POINT_COUNT - 1) {
+      break;
+    }
+
+    if (time < MOVE_SECONDS) {
+      return {
+        phase: "move",
+        fromIndex: index,
+        toIndex: index + 1,
+        progress: easeInCubic(time / MOVE_SECONDS),
+      };
+    }
+
+    time -= MOVE_SECONDS;
+  }
+
+  return {
+    phase: "hold",
+    holdIndex: PATH_POINT_COUNT - 1,
+    elapsedInHold: HOLD_SECONDS,
+  };
+}
+
+function getPositionForSymbol(symbol: SymbolItem, timeline: TimelineState) {
+  if (timeline.phase === "hold") {
+    const point = symbol.path[timeline.holdIndex];
+    return {
+      col: point.col,
+      row: point.row,
+      translateX: (point.col - symbol.col) * 100,
+      translateY: (point.row - symbol.row) * 100,
+    };
+  }
+
+  const fromPoint = symbol.path[timeline.fromIndex];
+  const toPoint = symbol.path[timeline.toIndex];
+
+  const col = fromPoint.col + (toPoint.col - fromPoint.col) * timeline.progress;
+  const row = fromPoint.row + (toPoint.row - fromPoint.row) * timeline.progress;
+
+  return {
+    col,
+    row,
+    translateX: (col - symbol.col) * 100,
+    translateY: (row - symbol.row) * 100,
+  };
 }
 
 function getTypedText(fullText: string, elapsedInHold: number) {
@@ -262,13 +363,180 @@ function getLabelOpacity(elapsedInHold: number) {
   return 1 - fadeElapsed / FADE_DURATION_SECONDS;
 }
 
+function getTypingDeleteText(fullText: string, elapsedInHold: number) {
+  if (elapsedInHold < 0) return "";
+
+  if (elapsedInHold < TYPE_SECONDS) {
+    const progress = elapsedInHold / TYPE_SECONDS;
+    const visibleCount = Math.floor(fullText.length * progress);
+    return fullText.slice(0, visibleCount);
+  }
+
+  if (elapsedInHold < DELETE_START_SECONDS) {
+    return fullText;
+  }
+
+  if (elapsedInHold < DELETE_START_SECONDS + DELETE_DURATION_SECONDS) {
+    const progress =
+      (elapsedInHold - DELETE_START_SECONDS) / DELETE_DURATION_SECONDS;
+    const visibleCount = Math.ceil(fullText.length * (1 - progress));
+    return fullText.slice(0, Math.max(0, visibleCount));
+  }
+
+  return "";
+}
+
 export default function HomeCoverSection({
   section,
   isActive,
 }: HomeCoverSectionProps) {
   const captionText = "O-LAT means Origin Layout & Advanced Technology.";
-  const cycleStartRef = useRef<number | null>(null);
-  const [labelStates, setLabelStates] = useState<Record<string, LabelState>>({});
+
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isDesktopWide, setIsDesktopWide] = useState(false);
+
+  const rafRef = useRef<number | null>(null);
+  const startMsRef = useRef<number | null>(null);
+  const pausedElapsedRef = useRef(0);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1025px)");
+
+    const syncDesktopState = () => {
+      setIsDesktopWide(mediaQuery.matches);
+    };
+
+    syncDesktopState();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", syncDesktopState);
+      return () => {
+        mediaQuery.removeEventListener("change", syncDesktopState);
+      };
+    }
+
+    mediaQuery.addListener(syncDesktopState);
+    return () => {
+      mediaQuery.removeListener(syncDesktopState);
+    };
+  }, []);
+
+  useEffect(() => {
+    const stopLoop = () => {
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    if (!isActive) {
+      stopLoop();
+
+      if (startMsRef.current !== null) {
+        pausedElapsedRef.current =
+          (performance.now() - startMsRef.current) / 1000;
+      }
+
+      return stopLoop;
+    }
+
+    startMsRef.current = performance.now() - pausedElapsedRef.current * 1000;
+
+    const tick = (now: number) => {
+      if (startMsRef.current === null) {
+        startMsRef.current = now;
+      }
+
+      const elapsed = (now - startMsRef.current) / 1000;
+      pausedElapsedRef.current = elapsed;
+      setElapsedSeconds(elapsed % ROUTE_TOTAL_SECONDS);
+      rafRef.current = window.requestAnimationFrame(tick);
+    };
+
+    rafRef.current = window.requestAnimationFrame(tick);
+
+    return stopLoop;
+  }, [isActive]);
+
+  const timeline = useMemo(() => {
+    return getTimelineState(elapsedSeconds);
+  }, [elapsedSeconds]);
+
+  const symbolPositions = useMemo(() => {
+    return symbols.reduce<
+      Record<
+        string,
+        {
+          col: number;
+          row: number;
+          translateX: number;
+          translateY: number;
+        }
+      >
+    >((acc, symbol) => {
+      acc[symbol.key] = getPositionForSymbol(symbol, timeline);
+      return acc;
+    }, {});
+  }, [timeline]);
+
+  const labelStates = useMemo<Record<string, LabelState>>(() => {
+    if (timeline.phase !== "hold") {
+      return {};
+    }
+
+    const nextStates: Record<string, LabelState> = {};
+
+    for (const item of annotations) {
+      const triggerSymbolPosition = symbolPositions[item.trigger.symbolKey];
+
+      if (!triggerSymbolPosition) continue;
+
+      const isMatched =
+        triggerSymbolPosition.col === item.trigger.col &&
+        triggerSymbolPosition.row === item.trigger.row;
+
+      if (!isMatched) continue;
+
+      const text = getTypedText(item.text, timeline.elapsedInHold);
+      const opacity = getLabelOpacity(timeline.elapsedInHold);
+
+      if (text.length > 0 && opacity > 0) {
+        nextStates[item.id] = {
+          text,
+          opacity,
+        };
+      }
+    }
+
+    return nextStates;
+  }, [symbolPositions, timeline]);
+
+  const nameState = useMemo<NameState>(() => {
+    if (!isDesktopWide || timeline.phase !== "hold") {
+      return { kim: "", eun: "", su: "" };
+    }
+
+    const isVerticalColumnAlign = symbols.every((symbol) => {
+      const position = symbolPositions[symbol.key];
+      return position && position.col === 3;
+    });
+
+    if (!isVerticalColumnAlign) {
+      return { kim: "", eun: "", su: "" };
+    }
+
+    return {
+      kim: getTypingDeleteText("KIM", timeline.elapsedInHold),
+      eun: getTypingDeleteText("EUN", timeline.elapsedInHold),
+      su: getTypingDeleteText("SU", timeline.elapsedInHold),
+    };
+  }, [isDesktopWide, symbolPositions, timeline]);
+
+  const showNameLayer =
+    isDesktopWide &&
+    (nameState.kim.length > 0 ||
+      nameState.eun.length > 0 ||
+      nameState.su.length > 0);
 
   const annotationsBySymbol = useMemo(() => {
     return annotations.reduce<Record<string, AnnotationItem[]>>((acc, item) => {
@@ -278,58 +546,6 @@ export default function HomeCoverSection({
     }, {});
   }, []);
 
-  useEffect(() => {
-    if (!isActive) {
-      setLabelStates({});
-      cycleStartRef.current = null;
-      return;
-    }
-
-    cycleStartRef.current = performance.now();
-
-    let frameId = 0;
-
-    const tick = (now: number) => {
-      if (cycleStartRef.current === null) {
-        cycleStartRef.current = now;
-      }
-
-      const elapsedSeconds =
-        ((now - cycleStartRef.current) / 1000) % ROUTE_TOTAL_SECONDS;
-
-      const nextStates: Record<string, LabelState> = {};
-
-      for (const item of annotations) {
-        const holdStart =
-          item.triggerHoldIndex * HOLD_SECONDS +
-          item.triggerHoldIndex * MOVE_SECONDS;
-        const holdEnd = holdStart + HOLD_SECONDS;
-
-        if (elapsedSeconds >= holdStart && elapsedSeconds < holdEnd) {
-          const elapsedInHold = elapsedSeconds - holdStart;
-          const text = getTypedText(item.text, elapsedInHold);
-          const opacity = getLabelOpacity(elapsedInHold);
-
-          if (text.length > 0 && opacity > 0) {
-            nextStates[item.id] = {
-              text,
-              opacity,
-            };
-          }
-        }
-      }
-
-      setLabelStates(nextStates);
-      frameId = window.requestAnimationFrame(tick);
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-    };
-  }, [isActive]);
-
   return (
     <div className={styles.cover}>
       <div
@@ -337,9 +553,26 @@ export default function HomeCoverSection({
         data-active={isActive ? "true" : "false"}
         aria-label={section.highlight ?? "O-LAT cover artwork"}
       >
+        {isDesktopWide && (
+          <div
+            className={`${styles.nameLayer} ${
+              showNameLayer ? styles.nameLayerVisible : ""
+            }`}
+            aria-hidden="true"
+          >
+            <div className={styles.kimBlock}>{nameState.kim}</div>
+
+            <div className={styles.rightNameGroup}>
+              <div className={styles.eunBlock}>{nameState.eun}</div>
+              <div className={styles.suBlock}>{nameState.su}</div>
+            </div>
+          </div>
+        )}
+
         <div className={styles.symbolGrid}>
           {symbols.map((symbol) => {
             const relatedAnnotations = annotationsBySymbol[symbol.key] ?? [];
+            const route = symbolPositions[symbol.key];
 
             return (
               <div
@@ -349,7 +582,12 @@ export default function HomeCoverSection({
                 aria-label={symbol.label}
                 role="img"
               >
-                <div className={styles.symbolRoute}>
+                <div
+                  className={styles.symbolRoute}
+                  style={{
+                    transform: `translate(${route.translateX}%, ${route.translateY}%)`,
+                  }}
+                >
                   <div className={`${styles.symbolFloat} ${symbol.className}`}>
                     <img
                       src={symbol.src}

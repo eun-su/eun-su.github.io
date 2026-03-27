@@ -1,0 +1,361 @@
+.projectSection {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1.25rem;
+}
+
+.projectHead {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 1.8rem;
+    align-items: start;
+  }
+}
+
+.indexLabel {
+  align-self: start;
+  font-size: clamp(0.86rem, 1vw, 0.98rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--page-text-muted);
+}
+
+.projectIntro {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  font-weight: 500;
+  font-size: clamp(1.3rem, 2vw, 1.95rem);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.desc {
+  display: none;
+}
+
+.projectViewport {
+  position: relative;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  perspective: 2200px;
+  overflow: visible;
+}
+
+.projectTrack {
+  position: relative;
+  width: min(100%, 1024px);
+  height: clamp(27rem, 65vh, 54rem);
+  transform-style: preserve-3d;
+}
+
+.projectCard {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(100%, 1024px);
+  height: 100%;
+  padding: clamp(1rem, 1.5vw, 1.6rem);
+  border: 1px solid color-mix(in srgb, var(--page-line) 88%, transparent);
+  border-radius: clamp(1.6rem, 2.4vw, 2.3rem);
+  background: color-mix(in srgb, var(--page-card) 96%, white);
+  box-shadow: 0 24px 60px rgba(17, 20, 36, 0.12);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+
+  @media (max-width: 767px) {
+    padding: 0.9rem;
+  }
+}
+
+.projectCardActive {
+  border-color: color-mix(in srgb, var(--page-point) 34%, var(--page-line));
+  box-shadow: 0 32px 82px rgba(17, 20, 36, 0.18);
+}
+
+.projectCardBody {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: clamp(0.8rem, 1.4vw, 1.15rem);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.projectCardActive .projectCardBody {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.projectCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.projectCardCategory,
+.projectCardStep {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.45rem 0.78rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--page-line) 54%, transparent);
+  color: var(--page-text);
+  font-size: clamp(0.7rem, 0.9vw, 0.78rem);
+  line-height: 1;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.projectCardStep {
+  color: var(--page-text-muted);
+}
+
+.projectMedia {
+  position: relative;
+  width: 100%;
+  border-radius: clamp(1.25rem, 2vw, 1.9rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--page-line) 78%, transparent);
+  background: color-mix(in srgb, var(--page-card) 84%, white);
+  aspect-ratio: 3 / 2;
+}
+
+.projectMediaImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.projectMediaPlaceholder {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  text-align: center;
+  background: color-mix(in srgb, var(--page-card) 92%, white);
+}
+
+.projectMediaPlaceholderLabel {
+  position: absolute;
+  top: clamp(0.9rem, 1.4vw, 1.25rem);
+  left: clamp(0.9rem, 1.4vw, 1.25rem);
+  font-size: clamp(0.68rem, 0.78vw, 0.78rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--page-text-muted);
+}
+
+.projectMediaPlaceholderTitle {
+  display: block;
+  max-width: 18ch;
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.8vw, 2.8rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.projectMediaPlaceholderText {
+  margin: 0.7rem 0 0;
+  color: var(--page-text-soft);
+  font-size: clamp(0.92rem, 1.05vw, 1.02rem);
+  line-height: 1.7;
+}
+
+.projectCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+}
+
+.projectCardTitle {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2vw, 2.45rem);
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+}
+
+.projectCardDesc {
+  margin: 0;
+  color: var(--page-text-soft);
+  font-size: clamp(0.96rem, 1.08vw, 1.05rem);
+  line-height: 1.76;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.metaList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.55rem 0.88rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--page-line) 54%, transparent);
+  color: var(--page-text-soft);
+  font-size: clamp(0.76rem, 0.92vw, 0.9rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.projectCardFooter {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.moreButton {
+  min-width: 11rem;
+  min-height: 3.2rem;
+  padding: 0.95rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--page-point) 28%, var(--page-line));
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--page-card) 86%, transparent);
+  color: var(--page-text);
+  font-size: 0.88rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 0.24s ease,
+    border-color 0.24s ease,
+    background-color 0.24s ease,
+    box-shadow 0.24s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--page-point) 48%, var(--page-line));
+    background: color-mix(in srgb, var(--page-point) 14%, var(--page-card));
+    box-shadow: 0 14px 30px rgba(17, 20, 36, 0.12);
+  }
+}
+
+.projectProgress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--page-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.projectHint {
+  margin: 0;
+  color: var(--page-text-soft);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+@media (max-width: 1023px) {
+  .projectTrack {
+    width: min(100%, 1024px);
+    height: clamp(27rem, 65vh, 54rem);
+  }
+
+  .projectCard {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .projectSection {
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: clamp(1.3rem, 5vw, 1.6rem);
+    line-height: 1.2;
+  }
+
+  .projectTrack {
+    height: clamp(29rem, 58vh, 42rem);
+  }
+
+  .projectCardTop {
+    gap: 0.55rem;
+  }
+
+  .projectCardCategory,
+  .projectCardStep {
+    min-height: 1.8rem;
+    padding: 0.42rem 0.68rem;
+    font-size: 0.66rem;
+  }
+
+  .projectCardTitle {
+    font-size: clamp(1.28rem, 5.2vw, 1.75rem);
+  }
+
+  .projectCardDesc {
+    font-size: 0.92rem;
+    line-height: 1.68;
+  }
+
+  .metaList {
+    gap: 0.5rem;
+  }
+
+  .metaItem {
+    min-height: 1.8rem;
+    padding: 0.48rem 0.7rem;
+    font-size: 0.74rem;
+  }
+
+  .moreButton {
+    min-width: 9.6rem;
+    min-height: 2.95rem;
+    font-size: 0.78rem;
+  }
+
+  .projectProgress {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .projectHint {
+    text-align: left;
+  }
+}

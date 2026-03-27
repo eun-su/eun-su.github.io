@@ -7,8 +7,8 @@ import styles from "./Header.module.scss";
 
 const menuPages = [
   { href: "/intro", label: "Intro" },
+  { href: "/projects", label: "Projects" },
   { href: "/design", label: "Design Works" },
-  { href: "/study", label: "Study Notes" },
   { href: "/issues", label: "Issue Board" },
   { href: "/favorites", label: "Favorites" },
 ];
@@ -96,7 +96,8 @@ export default function Header({ onNavigate }: HeaderProps) {
         pointerEvents: "auto",
       });
 
-      gsap.timeline()
+      gsap
+        .timeline()
         .to(overlayRef.current, {
           opacity: 1,
           duration: 0.28,
@@ -167,7 +168,8 @@ export default function Header({ onNavigate }: HeaderProps) {
         bottomLineRef.current,
       ]);
 
-      gsap.timeline()
+      gsap
+        .timeline()
         .to(menuItemsRef.current.filter(Boolean), {
           y: 16,
           opacity: 0,
@@ -261,7 +263,8 @@ export default function Header({ onNavigate }: HeaderProps) {
     } else {
       gsap.killTweensOf([overlayRef.current, indexPanelRef.current]);
 
-      gsap.timeline()
+      gsap
+        .timeline()
         .to(indexPanelRef.current, {
           opacity: 0,
           duration: 0.12,

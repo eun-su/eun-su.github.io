@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import HomeContactSection from "./HomeContactSection";
 import HomeCoverSection from "./HomeCoverSection";
 import HomeDesignSection from "./HomeDesignSection";
@@ -10,7 +11,7 @@ type HomeSectionRendererProps = {
   section: MainSection;
   cards: ProjectCard[];
   currentProjectCard: number;
-  projectTrackRef: React.RefObject<HTMLDivElement | null>;
+  projectTrackRef: RefObject<HTMLDivElement | null>;
   onCtaClick?: (href?: string) => void;
 };
 
@@ -35,6 +36,7 @@ export default function HomeSectionRenderer({
           cards={cards}
           currentProjectCard={currentProjectCard}
           projectTrackRef={projectTrackRef}
+          onCtaClick={onCtaClick}
         />
       );
 

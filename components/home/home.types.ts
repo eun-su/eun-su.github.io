@@ -22,7 +22,12 @@ export type MainSection = {
 
 export type ProjectCard = {
   step: string;
+  category: string;
   title: string;
   desc: string;
   meta: string[];
+  imageSrc?: string;
+  imageAlt?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 };

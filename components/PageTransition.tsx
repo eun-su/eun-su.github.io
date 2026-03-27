@@ -31,14 +31,20 @@ const PAGE_THEME_MAP: Record<string, TransitionTheme> = {
     fillColor: "#33456B",
     barTrackColor: "rgba(234, 234, 240, 0.26)",
   },
-  "/design": {
-    label: "Entering Design Works",
+  "/projects": {
+    label: "Entering Projects",
     baseColor: "#F4EFF4",
     fillColor: "#A1002B",
     barTrackColor: "rgba(234, 234, 240, 0.26)",
   },
+  "/design": {
+    label: "Entering Design Works",
+    baseColor: "#FCFCFD",
+    fillColor: "#960C24",
+    barTrackColor: "rgba(234, 234, 240, 0.26)",
+  },
   "/study": {
-    label: "Entering Study Notes",
+    label: "Entering Design Works",
     baseColor: "#FCFCFD",
     fillColor: "#960C24",
     barTrackColor: "rgba(234, 234, 240, 0.26)",
