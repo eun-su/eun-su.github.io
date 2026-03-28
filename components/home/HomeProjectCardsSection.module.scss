@@ -12,9 +12,9 @@
   gap: 0.9rem;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 8rem minmax(0, 1fr);
-    gap: 1.8rem;
-    align-items: start;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
   }
 }
 
@@ -24,6 +24,10 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--page-text-muted);
+
+  @media (min-width: 1024px) {
+    min-width: 2.4rem;
+  }
 }
 
 .projectIntro {
@@ -71,7 +75,8 @@
   margin: auto;
   width: min(100%, 1024px);
   height: 100%;
-  padding: clamp(1rem, 1.5vw, 1.6rem);
+  padding: 0;
+  overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--page-line) 88%, transparent);
   border-radius: clamp(1.6rem, 2.4vw, 2.3rem);
   background: color-mix(in srgb, var(--page-card) 96%, white);
@@ -79,10 +84,6 @@
   transform-origin: center center;
   will-change: transform, opacity;
   backface-visibility: hidden;
-
-  @media (max-width: 767px) {
-    padding: 0.9rem;
-  }
 }
 
 .projectCardActive {
@@ -95,7 +96,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  gap: clamp(0.8rem, 1.4vw, 1.15rem);
+  gap: 0;
   opacity: 0;
   transform: translateY(10px);
   pointer-events: none;
@@ -107,9 +108,20 @@
   pointer-events: auto;
 }
 
+.projectVisualArea {
+  position: relative;
+  flex: 0 0 60%;
+  min-height: 0;
+}
+
 .projectCardTop {
+  position: absolute;
+  top: clamp(0.85rem, 1.4vw, 1.15rem);
+  left: clamp(0.85rem, 1.4vw, 1.15rem);
+  right: clamp(0.85rem, 1.4vw, 1.15rem);
+  z-index: 2;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.8rem;
 }
@@ -121,27 +133,35 @@
   align-items: center;
   min-height: 2rem;
   padding: 0.45rem 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--page-line) 54%, transparent);
-  color: var(--page-text);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(17, 20, 36, 0.08);
+  color: #111;
   font-size: clamp(0.7rem, 0.9vw, 0.78rem);
   line-height: 1;
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 
+.projectCardCategory {
+  max-width: min(72%, 34rem);
+}
+
 .projectCardStep {
-  color: var(--page-text-muted);
+  flex-shrink: 0;
+  color: rgba(17, 17, 17, 0.72);
 }
 
 .projectMedia {
   position: relative;
   width: 100%;
-  border-radius: clamp(1.25rem, 2vw, 1.9rem);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--page-line) 78%, transparent);
+  height: 100%;
+  border: 0;
+  border-radius: 0;
   background: color-mix(in srgb, var(--page-card) 84%, white);
-  aspect-ratio: 3 / 2;
 }
 
 .projectMediaImage {
@@ -149,6 +169,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
 }
 
 .projectMediaPlaceholder {
@@ -164,8 +185,8 @@
 
 .projectMediaPlaceholderLabel {
   position: absolute;
-  top: clamp(0.9rem, 1.4vw, 1.25rem);
-  left: clamp(0.9rem, 1.4vw, 1.25rem);
+  top: clamp(1rem, 1.5vw, 1.2rem);
+  left: clamp(1rem, 1.5vw, 1.2rem);
   font-size: clamp(0.68rem, 0.78vw, 0.78rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -188,25 +209,37 @@
   line-height: 1.7;
 }
 
-.projectCardInfo {
+.projectContentArea {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.72rem;
+  justify-content: space-between;
+  padding: clamp(1rem, 1.5vw, 1.6rem);
+  border-top: 1px solid color-mix(in srgb, var(--page-line) 72%, transparent);
+  background: color-mix(in srgb, var(--page-card) 96%, white);
+}
+
+.projectCardInfo {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
 .projectCardTitle {
   margin: 0;
   font-weight: 500;
-  font-size: clamp(1.5rem, 2vw, 2.45rem);
-  line-height: 1.14;
+  font-size: clamp(1.3rem, 1.8vw, 2.1rem);
+  line-height: 1.16;
   letter-spacing: -0.035em;
 }
 
 .projectCardDesc {
   margin: 0;
   color: var(--page-text-soft);
-  font-size: clamp(0.96rem, 1.08vw, 1.05rem);
-  line-height: 1.76;
+  font-size: clamp(0.94rem, 1vw, 1rem);
+  line-height: 1;
   display: -webkit-box;
   overflow: hidden;
   -webkit-line-clamp: 2;
@@ -236,19 +269,19 @@
 }
 
 .projectCardFooter {
-  margin-top: auto;
+  padding-top: 1rem;
   display: flex;
   justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
-.moreButton {
+.moreButton,
+.siteButton {
   min-width: 11rem;
   min-height: 3.2rem;
   padding: 0.95rem 1.4rem;
-  border: 1px solid color-mix(in srgb, var(--page-point) 28%, var(--page-line));
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--page-card) 86%, transparent);
-  color: var(--page-text);
   font-size: 0.88rem;
   line-height: 1;
   letter-spacing: 0.12em;
@@ -259,12 +292,32 @@
     border-color 0.24s ease,
     background-color 0.24s ease,
     box-shadow 0.24s ease;
+}
+
+.moreButton {
+  border: 1px solid color-mix(in srgb, var(--page-point) 28%, var(--page-line));
+  background: color-mix(in srgb, var(--page-card) 86%, transparent);
+  color: var(--page-text);
 
   &:hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--page-point) 48%, var(--page-line));
     background: color-mix(in srgb, var(--page-point) 14%, var(--page-card));
     box-shadow: 0 14px 30px rgba(17, 20, 36, 0.12);
+  }
+}
+
+.siteButton {
+  border: 1px solid color-mix(in srgb, var(--page-point) 72%, transparent);
+  background: var(--page-point);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(17, 20, 36, 0.12);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--page-point) 92%, transparent);
+    background: color-mix(in srgb, var(--page-point) 88%, black 12%);
+    box-shadow: 0 16px 32px rgba(17, 20, 36, 0.18);
   }
 }
 
@@ -290,13 +343,20 @@
 }
 
 @media (max-width: 1023px) {
-  .projectTrack {
-    width: min(100%, 1024px);
-    height: clamp(27rem, 65vh, 54rem);
-  }
-
   .projectCard {
     width: 100%;
+  }
+
+  .projectTrack {
+    height: clamp(29rem, 62vh, 50rem);
+  }
+
+  .projectVisualArea {
+    flex-basis: 58%;
+  }
+
+  .projectCardTitle {
+    font-size: clamp(1.2rem, 2.8vw, 1.8rem);
   }
 }
 
@@ -314,8 +374,15 @@
     height: clamp(29rem, 58vh, 42rem);
   }
 
+  .projectVisualArea {
+    flex-basis: 55%;
+  }
+
   .projectCardTop {
-    gap: 0.55rem;
+    top: 0.7rem;
+    left: 0.7rem;
+    right: 0.7rem;
+    gap: 0.5rem;
   }
 
   .projectCardCategory,
@@ -325,13 +392,21 @@
     font-size: 0.66rem;
   }
 
+  .projectCardCategory {
+    max-width: 72%;
+  }
+
+  .projectContentArea {
+    padding: 0.95rem;
+  }
+
   .projectCardTitle {
-    font-size: clamp(1.28rem, 5.2vw, 1.75rem);
+    font-size: clamp(1.12rem, 4.8vw, 1.55rem);
   }
 
   .projectCardDesc {
-    font-size: 0.92rem;
-    line-height: 1.68;
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
   }
 
   .metaList {
@@ -344,7 +419,13 @@
     font-size: 0.74rem;
   }
 
-  .moreButton {
+  .projectCardFooter {
+    padding-top: 0.8rem;
+    gap: 0.6rem;
+  }
+
+  .moreButton,
+  .siteButton {
     min-width: 9.6rem;
     min-height: 2.95rem;
     font-size: 0.78rem;
