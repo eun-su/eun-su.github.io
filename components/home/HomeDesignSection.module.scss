@@ -80,11 +80,26 @@
 }
 
 .bannerLane {
+  --edge-fade: clamp(96px, 10vw, 180px);
   position: relative;
   width: 100%;
   min-width: 0;
   height: 100%;
   overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--edge-fade),
+    black calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--edge-fade),
+    black calc(100% - var(--edge-fade)),
+    transparent 100%
+  );
 }
 
 .bannerTrack {

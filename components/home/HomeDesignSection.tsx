@@ -32,6 +32,7 @@ const bannerRows: BannerItem[][] = [
     { id: "design-06", src: "/images/design/design06.jpg", alt: "Design banner 06", toneClass: styles.toneB },
     { id: "design-19", src: "/images/design/design19.jpg", alt: "Design banner 19", toneClass: styles.toneC },
     { id: "design-20", src: "/images/design/design20.jpg", alt: "Design banner 20", toneClass: styles.toneC },
+    { id: "design-21", src: "/images/design/design21.jpg", alt: "Design banner 21", toneClass: styles.toneC },
   ],
   [
     { id: "design-07", src: "/images/design/design07.jpg", alt: "Design banner 07", toneClass: styles.toneB },

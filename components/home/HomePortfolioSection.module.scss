@@ -1,20 +1,25 @@
 .portfolioLayout {
   display: grid;
-  gap: 1.7rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(1rem, 1.4vw, 1.25rem);
+  width: 100%;
+  height: 100%;
 }
 
 .headerRow {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 0.7rem;
+  width: 100%;
 
-  @media (min-width: 1080px) {
-    grid-template-columns: minmax(80px, 120px) minmax(0, 1fr);
+  @media (min-width: 1024px) {
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 0.9rem;
   }
 }
 
-.indexLabel,
-.cardIndex {
+.indexLabel {
   color: var(--page-text-muted);
   font-size: 0.72rem;
   line-height: 1.4;
@@ -22,37 +27,96 @@
   text-transform: uppercase;
 }
 
-.title {
-  margin: 0;
-  font-size: clamp(2rem, 5.4vw, 4.8rem);
-  line-height: 0.96;
-  letter-spacing: -0.05em;
+.headerContent {
+  width: 100%;
+  text-align: center;
 }
 
-.desc {
-  max-width: 48rem;
-  margin: 1.25rem 0 0;
-  color: var(--page-text-muted);
-  line-height: 1.9;
+.title {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  font-size: clamp(1.25rem, 2vw, 1.95rem);
+  line-height: 1.16;
+  letter-spacing: -0.035em;
 }
 
 .cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.95rem;
+  min-height: 0;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .card {
-  padding: 1.1rem;
-  min-height: 11rem;
-  border: 1px solid var(--page-line);
-  border-radius: 1.4rem;
-  background: var(--page-card);
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0.95rem;
+  min-height: 0;
+  padding: clamp(1rem, 1.35vw, 1.25rem);
+  border: 1px solid color-mix(in srgb, var(--page-line) 88%, transparent);
+  border-radius: 1.6rem;
+  background: color-mix(in srgb, var(--page-card) 96%, white);
+}
+
+.cardContent {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.35vw, 1.35rem);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
 }
 
 .cardText {
-  margin: 1rem 0 0;
-  line-height: 1.8;
+  margin: 0;
+  color: var(--page-text-soft);
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.imageWrap {
+  position: relative;
+  min-height: 0;
+  height: clamp(13.5rem, 30vh, 20rem);
+  overflow: hidden;
+  border-radius: 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--page-line) 72%, transparent);
+  background: color-mix(in srgb, var(--page-card) 92%, white);
+}
+
+.projectImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderBox {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  background:
+    linear-gradient(135deg, rgba(83, 118, 168, 0.94), rgba(124, 148, 195, 0.82)),
+    radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.2), transparent 36%);
+}
+
+.placeholderLabel {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.78rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .ctaButton {
@@ -60,8 +124,9 @@
   align-items: center;
   justify-content: center;
   min-height: 3rem;
+  height: 3rem;
   width: fit-content;
-  padding: 0.92rem 1.2rem;
+  padding: 0 1.2rem;
   border: 1px solid var(--button-border);
   border-radius: 9999px;
   background: var(--button-bg);
@@ -69,4 +134,316 @@
   cursor: pointer;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(17, 20, 36, 0.12);
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 2.8rem;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modalOverlayVisible {
+  animation: overlayFadeIn 0.28s ease forwards;
+}
+
+.modalOverlayHidden {
+  animation: overlayFadeOut 0.22s ease forwards;
+}
+
+.modalDialog {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 118rem);
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--page-line) 88%, transparent);
+  border-radius: 1.8rem;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 18, 28, 0.18);
+}
+
+.modalDialogVisible {
+  animation: modalFadeIn 0.32s ease forwards;
+}
+
+.modalDialogHidden {
+  animation: modalFadeOut 0.22s ease forwards;
+}
+
+.modalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--page-line) 82%, transparent);
+  background: #fff;
+}
+
+.modalEyebrow,
+.modalClose,
+.modalSectionLabel,
+.modalCounter {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.modalEyebrow,
+.modalSectionLabel,
+.modalCounter {
+  color: var(--page-text-muted);
+}
+
+.modalCounter {
+  margin: 0.35rem 0 0;
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  min-height: 3.2rem;
+  padding: 0 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--page-point) 24%, var(--page-line));
+  border-radius: 9999px;
+  background: #fff;
+  color: var(--page-text);
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(17, 20, 36, 0.08);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--page-point) 10%, white);
+    box-shadow: 0 14px 28px rgba(17, 20, 36, 0.12);
+  }
+}
+
+.modalBody {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.2rem 1.15rem 1.3rem;
+  background: #fff;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.2vw, 2.3rem);
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+}
+
+.modalSection {
+  margin-top: 1.2rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.modalParagraphs {
+  display: grid;
+  gap: 0.55rem;
+
+  p {
+    margin: 0;
+    color: var(--page-text-soft);
+    font-size: 0.95rem;
+    line-height: 1.78;
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--page-line) 82%, transparent);
+  background: #fff;
+}
+
+.modalNavButton,
+.modalNavButtonPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  height: 3rem;
+  min-width: 10rem;
+  padding: 0 1.2rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.modalNavButton {
+  border: 1px solid var(--button-border);
+  background: var(--button-bg);
+  color: var(--button-text);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(17, 20, 36, 0.12);
+  }
+}
+
+.modalNavButtonPrimary {
+  border: 1px solid color-mix(in srgb, var(--page-point) 68%, transparent);
+  background: var(--page-point);
+  color: #fff;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgba(17, 20, 36, 0.18);
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .portfolioLayout {
+    gap: 0.9rem;
+  }
+
+  .card {
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .title {
+    font-size: clamp(1.18rem, 5vw, 1.55rem);
+  }
+
+  .card {
+    padding: 0.95rem;
+    border-radius: 1.3rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .cardText {
+    font-size: 0.9rem;
+  }
+
+  .imageWrap {
+    height: clamp(12rem, 28vh, 16rem);
+    border-radius: 1rem;
+  }
+
+  .ctaButton {
+    min-height: 2.8rem;
+    height: 2.8rem;
+    font-size: 0.74rem;
+  }
+
+  .modalOverlay {
+    padding: 1rem;
+  }
+
+  .modalDialog {
+    border-radius: 1.35rem;
+  }
+
+  .modalHead {
+    padding: 0.9rem 0.95rem;
+  }
+
+  .modalBody {
+    padding: 1rem 0.95rem 1.1rem;
+  }
+
+  .modalFooter {
+    padding: 0.85rem 0.95rem 0.95rem;
+  }
+
+  .modalClose {
+    min-width: 5.6rem;
+    min-height: 2.9rem;
+    font-size: 0.68rem;
+  }
+
+  .modalNavButton,
+  .modalNavButtonPrimary {
+    min-width: 0;
+    flex: 1 1 0;
+    min-height: 2.8rem;
+    height: 2.8rem;
+    font-size: 0.72rem;
+  }
 }

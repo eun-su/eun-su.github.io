@@ -372,9 +372,9 @@ const ExperienceWidePanel = memo(function ExperienceWidePanel({
           </section>
 
           <section className={styles.projectSummary}>
-            <div className={styles.subHeader}>
-              <p className={styles.subHeaderTitle}>Project Highlights</p>
-            </div>
+            {/* <div className={styles.subHeader}>
+               <p className={styles.subHeaderTitle}>Project Highlights</p> 
+            </div> */}
 
             <ul className={styles.projectList}>
               {projectItems.map((item) => (

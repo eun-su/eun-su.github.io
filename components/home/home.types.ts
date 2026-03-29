@@ -18,6 +18,9 @@ export type MainSection = {
   bullets?: string[];
   stats?: Array<{ label: string; value: string }>;
   links?: Array<{ label: string; href: string }>;
+  meta?: string[];
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
 export type ProjectCard = {

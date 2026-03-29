@@ -140,7 +140,7 @@
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 0.65rem;
   align-content: start;
-  min-height: 0;
+  min-height: 50vh;
 }
 
 .profileTallBottom {
@@ -152,8 +152,8 @@
   position: relative;
   width: 100%;
   max-width: 100%;
-  height: min(280px, 30vh);
-  max-height: min(280px, 30vh);
+  // height: min(280px, 30vh);
+  max-height: min(400px, 50vh);
   min-height: 0;
   border: 1px solid var(--page-line);
   border-radius: 1.25rem;
