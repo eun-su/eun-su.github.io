@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 import type { MainSection } from "./home.types";
 import styles from "./HomePortfolioSection.module.scss";
 
@@ -13,7 +12,7 @@ type Props = {
 type MarketingProject = {
   id: string;
   title: string;
-  summary: string;
+  tags: string[];
   imageSrc?: string;
   imageAlt: string;
   goal: string[];
@@ -25,8 +24,14 @@ const marketingProjects: MarketingProject[] = [
   {
     id: "marketing-ads",
     title: "광고 집행과 분석 도구를 함께 보며 유입을 관리한 프로젝트",
-    summary:
-      "네이버 검색광고와 구글 분석 도구를 활용해 유입 흐름을 살피고, 배너·영상·카피라이팅 작업까지 함께 조정하며 키워드 운영을 이어간 실무입니다.",
+    tags: [
+      "#네이버검색광고",
+      "#구글분석도구",
+      "#배너제작",
+      "#영상제작",
+      "#카피라이팅",
+      "#키워드관리",
+    ],
     imageSrc: "/images/marketing/marketing01.jpg",
     imageAlt: "광고 운영 및 분석 작업 이미지",
     goal: [
@@ -44,8 +49,15 @@ const marketingProjects: MarketingProject[] = [
   {
     id: "marketing-commerce",
     title: "오픈마켓 · 쇼핑몰 · 라이브 커머스 협업으로 상품 노출을 최적화한 프로젝트",
-    summary:
-      "LF몰, SSG, GS홈쇼핑, 코오롱몰, 네이버 스마트스토어를 포함해 해외 플랫폼과 라이브 커머스까지 경험하며 기획전과 상품 노출 운영을 이어온 작업입니다.",
+    tags: [
+      "#LF몰",
+      "#SSG",
+      "#GS홈쇼핑",
+      "#코오롱몰",
+      "#네이버스토어",
+      "#해외쇼핑몰",
+      "#라이브커머스",
+    ],
     imageSrc: "/images/marketing/marketing02.jpg",
     imageAlt: "오픈마켓 및 이커머스 협업 이미지",
     goal: [
@@ -63,8 +75,14 @@ const marketingProjects: MarketingProject[] = [
   {
     id: "marketing-service",
     title: "상품 감정 · 매입 · 위탁 판매 서비스를 연결해 지속 이용을 유도한 프로젝트",
-    summary:
-      "전문가, 자사 담당자, 소비자, 업체를 연결하는 서비스 흐름을 소개하고 실제 서비스 이용으로 이어지도록 접점을 설계한 경험입니다.",
+    tags: [
+      "#상품감정",
+      "#매입연결",
+      "#위탁판매",
+      "#서비스모델",
+      "#전문가연결",
+      "#고객유도",
+    ],
     imageSrc: "/images/marketing/marketing03.jpg",
     imageAlt: "서비스 모델 연결 작업 이미지",
     goal: [
@@ -104,9 +122,7 @@ function ProjectImage({ project }: { project: MarketingProject }) {
 
 export default function HomePortfolioSection({ section }: Props) {
   const [activeProjectIndex, setActiveProjectIndex] = useState<number | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
   const activeProject = useMemo(() => {
     if (activeProjectIndex === null) {
@@ -116,19 +132,9 @@ export default function HomePortfolioSection({ section }: Props) {
     return marketingProjects[activeProjectIndex] ?? null;
   }, [activeProjectIndex]);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const openProject = (index: number) => {
-    setActiveProjectIndex(index);
     setIsClosing(false);
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setIsModalVisible(true);
-      });
-    });
+    setActiveProjectIndex(index);
   };
 
   const closeModal = () => {
@@ -137,7 +143,6 @@ export default function HomePortfolioSection({ section }: Props) {
     }
 
     setIsClosing(true);
-    setIsModalVisible(false);
   };
 
   const showPrev = () => {
@@ -145,6 +150,7 @@ export default function HomePortfolioSection({ section }: Props) {
       return;
     }
 
+    setIsClosing(false);
     setActiveProjectIndex(
       (activeProjectIndex - 1 + marketingProjects.length) % marketingProjects.length
     );
@@ -155,6 +161,7 @@ export default function HomePortfolioSection({ section }: Props) {
       return;
     }
 
+    setIsClosing(false);
     setActiveProjectIndex((activeProjectIndex + 1) % marketingProjects.length);
   };
 
@@ -197,103 +204,6 @@ export default function HomePortfolioSection({ section }: Props) {
     setIsClosing(false);
   };
 
-  const modalMarkup =
-    activeProject && isMounted
-      ? createPortal(
-          <div
-            className={`${styles.modalOverlay} ${
-              isModalVisible && !isClosing
-                ? styles.modalOverlayVisible
-                : styles.modalOverlayHidden
-            }`}
-            onClick={closeModal}
-            onAnimationEnd={handleOverlayAnimationEnd}
-            role="presentation"
-          >
-            <div
-              className={`${styles.modalDialog} ${
-                isModalVisible && !isClosing
-                  ? styles.modalDialogVisible
-                  : styles.modalDialogHidden
-              }`}
-              onClick={(event) => event.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={`${activeProject.id}-title`}
-            >
-              <div className={styles.modalHead}>
-                <div>
-                  <p className={styles.modalEyebrow}>Marketing Project</p>
-                  <p className={styles.modalCounter}>
-                    {String((activeProjectIndex ?? 0) + 1).padStart(2, "0")} /{" "}
-                    {String(marketingProjects.length).padStart(2, "0")}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className={styles.modalClose}
-                  onClick={closeModal}
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className={styles.modalBody}>
-                <h3 id={`${activeProject.id}-title`} className={styles.modalTitle}>
-                  {activeProject.title}
-                </h3>
-
-                <section className={styles.modalSection}>
-                  <p className={styles.modalSectionLabel}>Goal</p>
-                  <div className={styles.modalParagraphs}>
-                    {activeProject.goal.map((text) => (
-                      <p key={text}>{text}</p>
-                    ))}
-                  </div>
-                </section>
-
-                <section className={styles.modalSection}>
-                  <p className={styles.modalSectionLabel}>Analysis</p>
-                  <div className={styles.modalParagraphs}>
-                    {activeProject.analysis.map((text) => (
-                      <p key={text}>{text}</p>
-                    ))}
-                  </div>
-                </section>
-
-                <section className={styles.modalSection}>
-                  <p className={styles.modalSectionLabel}>Result</p>
-                  <div className={styles.modalParagraphs}>
-                    {activeProject.result.map((text) => (
-                      <p key={text}>{text}</p>
-                    ))}
-                  </div>
-                </section>
-              </div>
-
-              <div className={styles.modalFooter}>
-                <button
-                  type="button"
-                  className={styles.modalNavButton}
-                  onClick={showPrev}
-                >
-                  Prev
-                </button>
-                <button
-                  type="button"
-                  className={styles.modalNavButtonPrimary}
-                  onClick={showNext}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )
-      : null;
-
   return (
     <>
       <div className={styles.portfolioLayout}>
@@ -309,7 +219,14 @@ export default function HomePortfolioSection({ section }: Props) {
             <article key={project.id} className={styles.card}>
               <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>{project.title}</h3>
-                <p className={styles.cardText}>{project.summary}</p>
+
+                <ul className={styles.tagList}>
+                  {project.tags.map((tag) => (
+                    <li key={tag} className={styles.tagItem}>
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className={styles.imageWrap}>
@@ -328,7 +245,102 @@ export default function HomePortfolioSection({ section }: Props) {
         </div>
       </div>
 
-      {modalMarkup}
+      {activeProject ? (
+        <div
+          className={`${styles.modalOverlay} ${
+            isClosing ? styles.modalOverlayHidden : styles.modalOverlayVisible
+          }`}
+          onClick={closeModal}
+          onAnimationEnd={handleOverlayAnimationEnd}
+          onWheelCapture={(event) => event.stopPropagation()}
+          onTouchMoveCapture={(event) => event.stopPropagation()}
+          role="presentation"
+        >
+          <div
+            className={`${styles.modalDialog} ${
+              isClosing ? styles.modalDialogHidden : styles.modalDialogVisible
+            }`}
+            onClick={(event) => event.stopPropagation()}
+            onWheelCapture={(event) => event.stopPropagation()}
+            onTouchMoveCapture={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${activeProject.id}-title`}
+          >
+            <div className={styles.modalHead}>
+              <div>
+                <p className={styles.modalEyebrow}>Marketing Project</p>
+                <p className={styles.modalCounter}>
+                  {String((activeProjectIndex ?? 0) + 1).padStart(2, "0")} / {" "}
+                  {String(marketingProjects.length).padStart(2, "0")}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+
+            <div
+              className={styles.modalBody}
+              onWheelCapture={(event) => event.stopPropagation()}
+              onTouchMoveCapture={(event) => event.stopPropagation()}
+            >
+              <h3 id={`${activeProject.id}-title`} className={styles.modalTitle}>
+                {activeProject.title}
+              </h3>
+
+              <section className={styles.modalSection}>
+                <p className={styles.modalSectionLabel}>Goal</p>
+                <div className={styles.modalParagraphs}>
+                  {activeProject.goal.map((text) => (
+                    <p key={text}>{text}</p>
+                  ))}
+                </div>
+              </section>
+
+              <section className={styles.modalSection}>
+                <p className={styles.modalSectionLabel}>Analysis</p>
+                <div className={styles.modalParagraphs}>
+                  {activeProject.analysis.map((text) => (
+                    <p key={text}>{text}</p>
+                  ))}
+                </div>
+              </section>
+
+              <section className={styles.modalSection}>
+                <p className={styles.modalSectionLabel}>Result</p>
+                <div className={styles.modalParagraphs}>
+                  {activeProject.result.map((text) => (
+                    <p key={text}>{text}</p>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.modalNavButton}
+                onClick={showPrev}
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                className={styles.modalNavButtonPrimary}
+                onClick={showNext}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

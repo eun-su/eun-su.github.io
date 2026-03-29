@@ -415,7 +415,16 @@
   min-height: 0;
 }
 
-.careerCard,
+.careerCard {
+  display: grid;
+  gap: 0.16rem;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid var(--page-line);
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+
 .projectItem {
   display: grid;
   gap: 0.16rem;
@@ -423,6 +432,7 @@
   border: 1px solid var(--page-line);
   border-radius: 1.1rem;
   background: rgba(255, 255, 255, 0.42);
+  margin-bottom: 1rem;
 }
 
 .careerTitle,
