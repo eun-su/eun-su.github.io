@@ -81,12 +81,13 @@
 }
 
 .title {
-  margin: 0;
+  margin-bottom: 20px;
   width: 100%;
   max-width: none;
-  font-size: clamp(1.35rem, 2.2vw, 2.05rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   line-height: 1.16;
   letter-spacing: -0.04em;
+  white-space: pre-line;
 }
 
 .descriptionGroup {
@@ -99,7 +100,7 @@
   margin: 0;
   color: rgba(255, 255, 255, 0.84);
   font-size: clamp(0.94rem, 1.02vw, 1.02rem);
-  line-height: 1.85;
+  line-height: 1;
 }
 
 .linkBlock {

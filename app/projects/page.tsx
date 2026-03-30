@@ -3,12 +3,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import Header from "@/components/Header";
+import styles from "./ProjectsPage.module.scss";
 
 type ProjectDetailBlock = {
   label: string;
   title: string;
   paragraphs: string[];
   bullets?: string[];
+};
+
+type ProjectAction = {
+  label: string;
+  href: string;
+  openInNewTab?: boolean;
+  downloadFileName?: string;
 };
 
 type ProjectWork = {
@@ -21,6 +29,7 @@ type ProjectWork = {
   techniques: string[];
   imagery: string[];
   cover: string;
+  action: ProjectAction;
   detailBlocks: ProjectDetailBlock[];
 };
 
@@ -28,7 +37,7 @@ const works: ProjectWork[] = [
   {
     id: "project-renewal",
     step: "3-1",
-    category: "홈페이지 리뉴얼 및 튜닝",
+    category: "홈페이지 리뉴얼 및 API 연결",
     title: "브랜드 인상과 사용성을 함께 정리하는 리뉴얼 작업을 진행했습니다.",
     description:
       "기존 사이트의 구조와 화면 밀도를 점검하고, 사용자가 더 빠르게 핵심 정보에 도달할 수 있도록 레이아웃과 인터랙션을 재정리한 작업입니다.",
@@ -36,26 +45,32 @@ const works: ProjectWork[] = [
     techniques: ["UI 구조 재정리", "화면 밀도 조정", "운영 흐름 튜닝"],
     imagery: ["Main Visual", "Section Layout", "Responsive Detail"],
     cover: "/images/card/project01img01.jpg",
+    action: {
+      label: "View",
+      href: "https://luxavenue.co.kr",
+      openInNewTab: true,
+    },
     detailBlocks: [
       {
         label: "Overview",
         title: "프로젝트 개요",
         paragraphs: [
-          "기존 사이트는 정보 우선순위와 화면 리듬이 일정하지 않아 사용자가 핵심 내용을 파악하는 데 시간이 걸렸습니다.",
-          "그래서 전체적인 레이아웃 흐름, 타이포 밀도, 시선 이동 구간을 먼저 재정리하고 브랜드 인상이 더 명확하게 보이도록 방향을 잡았습니다.",
+          "기존 사이트는 정보 우선순위와 화면 리듬이 일정하지 않은 방식으로 사용자가 원하는 내용을 한눈에 찾기 어려웠습니다",
+          "플로그인과 결제 모듈 사용 불가, 서버 접근에 보안적 이슈 등으로 새로운 프레임워크로 사이트 구축이 필요했습니다",
+          "그래서 전체적인 레이아웃 흐름, 타이포 밀도, 시선 이동 구간을 먼저 재정리하고 브랜드 인상이 더 명확하게 보이는 솔루션을 이용하여 사이트를 구축하였습니다",
         ],
       },
       {
         label: "Process",
         title: "정리한 작업 범위",
         paragraphs: [
-          "메인 화면의 인상과 정보 배치, 주요 섹션 간 리듬, 운영 시 자주 수정되는 구간의 구조를 함께 점검했습니다.",
+          "메인 화면의 레이아웃 정보 배치, 주요 뎁스 간 리듬, 운영 시 실무자가 사용하기 편한 구조를 함께 점검했습니다.",
         ],
         bullets: [
           "메인 시각 구조 재정리",
-          "콘텐츠 우선순위 정렬",
+          "결제 및 게시판 기능 튜닝",
           "반응형 화면 밀도 조정",
-          "운영 편의성 고려",
+          "관리자 운영 편의성 고려",
         ],
       },
       {
@@ -71,27 +86,33 @@ const works: ProjectWork[] = [
     id: "project-payment",
     step: "3-2",
     category: "문의 및 결제 시스템 구축",
-    title: "문의와 결제, 확인 단계가 자연스럽게 이어지도록 흐름을 설계했습니다.",
+    title: "문의와 결제, 확인 단계가 자연스럽게 이어지도록 흐름을 설계하였습니다",
     description:
       "사용자 입력, 관리자 확인, 결제 연결, 후속 응대까지 하나의 흐름으로 보며 끊기지 않는 경험을 만들기 위해 게시판과 결제 관련 화면을 함께 다뤘습니다.",
-    tools: ["JSP", "JavaScript", "게시판 연동", "PG 연동"],
+    tools: ["PHP", "JavaScript", "게시판 연동", "PG 연동"],
     techniques: ["문의 플로우 설계", "결제 단계 연결", "운영 확인 프로세스"],
     imagery: ["Inquiry Form", "Payment Flow", "Admin Checkpoint"],
     cover: "/images/card/project02img01.jpg",
+    action: {
+      label: "View",
+      href: "/images/card/project02img02.jpg",
+      openInNewTab: true,
+    },
     detailBlocks: [
       {
         label: "Overview",
         title: "프로젝트 개요",
         paragraphs: [
-          "문의에서 끝나는 것이 아니라 실제 결제와 확인 단계까지 이어지는 흐름이 자연스럽게 연결되도록 설계하는 작업이 필요했습니다.",
-          "사용자 입장에서는 입력과 결제가 부드럽게 이어져야 했고, 운영자 입장에서는 확인과 처리 흐름이 명확해야 했습니다.",
+          "문의에서 끝나는 것이 아니라 실제 결제와 확인 단계까지 이어지는 흐름이 자연스럽게 연결되도록 설계하는 작업이 필요했습니다",
+          "사용자 입장에서는 입력과 결제가 부드럽게 이어져야 했고, 운영자 입장에서는 문의 확인과 처리 흐름이 명확해야 했습니다",
         ],
       },
       {
         label: "Flow",
         title: "핵심 플로우",
         paragraphs: [
-          "입력 → 검토 → 결제 → 후속 처리로 이어지는 흐름을 한 덩어리로 보고, 끊기는 지점을 줄이는 방향으로 구성했습니다.",
+          "입력 → 검토 → 결제 → 후속 처리로 이어지는 흐름을 한 덩어리로 보고, 끊기는 지점을 줄이는 방향으로 구성했습니다",
+          "가비아 씨엔에스 맞춤개발팀과 협업하여 기존 솔루션에 없는 기능을 추가하였습니다",
         ],
         bullets: [
           "게시판 입력 구조 조정",
@@ -104,7 +125,7 @@ const works: ProjectWork[] = [
         label: "Result",
         title: "의미 있는 포인트",
         paragraphs: [
-          "단순 기능 연결이 아니라 사용성과 운영 프로세스를 함께 본 점이 중요했습니다. 실제 서비스 화면과 관리 흐름을 동시에 다루는 경험이었습니다.",
+          "단순 기능 연결이 아니라 사용성과 운영 프로세스를 함께 본 점이 중요했습니다. 실제 고객과 소통하는 서비스 화면과 관리 흐름을 동시에 다루는 경험이었습니다.",
         ],
       },
     ],
@@ -112,20 +133,25 @@ const works: ProjectWork[] = [
   {
     id: "project-ux",
     step: "3-3",
-    category: "사용자 · 고객 접점 개선",
-    title: "사용자와 고객이 실제로 머무는 구간을 중심으로 화면을 개선했습니다.",
+    category: "브랜딩 카페24 튜닝",
+    title: "미스코코의 브랜딩 컨셉을 새로 정리하고, 그에 맞춰 홈페이지를 리뉴얼 및 튜닝했습니다",
     description:
       "홈페이지와 쇼핑몰에서 이탈이 생기기 쉬운 구간을 중심으로 정보 구조와 시선 흐름을 정리하고, 문의와 구매 전환 구간을 더 명확하게 다듬었습니다.",
-    tools: ["Cafe24", "고도몰", "아임웹", "Figma"],
+    tools: ["Cafe24", "JavaScript", "아임웹", "Figma"],
     techniques: ["사용자 여정 점검", "상세/문의 흐름 개선", "전환 구간 정리"],
     imagery: ["Customer Journey", "Detail Page", "Conversion Point"],
     cover: "/images/card/project03img01.jpg",
+    action: {
+      label: "View",
+      href: "https://misscoco.co.kr",
+      openInNewTab: true,
+    },
     detailBlocks: [
       {
         label: "Overview",
         title: "프로젝트 개요",
         paragraphs: [
-          "사용자와 고객이 실제로 머무는 구간을 기준으로 화면을 다시 살펴보며, 이탈이 많거나 이해가 어려운 부분을 우선적으로 정리했습니다.",
+          "브랜드 인상이 더 선명하게 전달되도록 미스코코의 컨셉을 새롭게 정리 후 상품 이미지와 레이아웃이 사용자에게 더 돋보이도록 세부 화면을 리뉴얼",
         ],
       },
       {
@@ -145,7 +171,8 @@ const works: ProjectWork[] = [
         label: "Result",
         title: "정리한 방향",
         paragraphs: [
-          "사용자가 판단해야 하는 순간에 필요한 정보가 더 명확하게 보이도록 하는 데 집중했고, 화면이 단순해 보이더라도 실제 행동 흐름이 자연스럽게 이어지도록 설계했습니다.",
+          "그래서 브랜드가 전달하고자 하는 분위기와 상품의 매력이 더 잘 드러나도록 메인 화면과 주요 페이지 구조를 리뉴얼하고, 카페24 환경에 맞춰 실제 운영에 필요한 부분까지 함께 튜닝했습니다",
+          "사용자가 판단해야 하는 순간에 필요한 정보가 더 명확하게 보이도록 하는 데 집중했고, 화면이 단순해 보이더라도 실제 행동 흐름이 자연스럽게 이어지도록 설계했습니다",
         ],
       },
     ],
@@ -154,13 +181,18 @@ const works: ProjectWork[] = [
     id: "project-marketing",
     step: "3-4",
     category: "광고 운영 및 마케팅 협업",
-    title: "광고 이후의 유입과 전환까지 이어지는 흐름을 함께 보며 운영했습니다.",
+    title: "사이트 구축 이후 광고 및 홍보를 통해 유입과 전환까지 이어지도록 운영하였습니다",
     description:
       "검색광고, 기획전, 제휴 협업, 운영 데이터를 연결해서 단순 노출이 아니라 실제 반응과 전환으로 이어지는 접점을 찾고 조정한 경험을 담았습니다.",
     tools: ["네이버 검색광고", "GA4", "기획전 운영", "제휴 협업"],
     techniques: ["유입 분석", "성과 흐름 점검", "운영/마케팅 협업"],
     imagery: ["Campaign Overview", "Traffic Data", "Promotion Assets"],
     cover: "/images/card/project04img01.jpg",
+    action: {
+      label: "View",
+      href: "/images/card/project04img01.jpg",
+      openInNewTab: true,
+    },
     detailBlocks: [
       {
         label: "Overview",
@@ -173,7 +205,7 @@ const works: ProjectWork[] = [
         label: "Operation",
         title: "협업 방식",
         paragraphs: [
-          "검색광고, 기획전 운영, 제휴 협업 등 개별 작업을 따로 보지 않고 실제 반응과 운영 연결까지 한 흐름으로 이해하려고 했습니다.",
+          "검색광고, 프모로션 기획전 운영, 제휴 협업 등 개별 작업을 따로 보지 않고 실제 반응과 운영 연결까지 한 흐름으로 이해하려고 했습니다.",
         ],
         bullets: [
           "유입 채널 점검",
@@ -194,6 +226,10 @@ const works: ProjectWork[] = [
 ];
 
 const MOBILE_PRIMARY_COUNT = 2;
+
+const cn = (...classNames: Array<string | false | null | undefined>) => {
+  return classNames.filter(Boolean).join(" ");
+};
 
 const getIndexByHash = (hashValue: string) => {
   const cleanHash = hashValue.replace("#", "").trim();
@@ -222,6 +258,23 @@ export default function ProjectsPage() {
   const mobileInfoRef = useRef<HTMLDivElement | null>(null);
 
   const currentWork = useMemo(() => works[currentIndex], [currentIndex]);
+  const infoGroups = useMemo(
+    () => [
+      {
+        label: "Tools",
+        items: currentWork.tools,
+      },
+      {
+        label: "Techniques",
+        items: currentWork.techniques,
+      },
+      {
+        label: "Imagery",
+        items: currentWork.imagery,
+      },
+    ],
+    [currentWork]
+  );
 
   const mobilePrimaryWorks = works.slice(0, MOBILE_PRIMARY_COUNT);
   const mobileHiddenWorks = works.slice(MOBILE_PRIMARY_COUNT);
@@ -278,19 +331,6 @@ export default function ProjectsPage() {
     });
   };
 
-  const scrollContentToEnd = (behavior: ScrollBehavior = "smooth") => {
-    const container = getActiveScrollContainer();
-
-    if (!container) {
-      return;
-    }
-
-    container.scrollTo({
-      top: container.scrollHeight,
-      behavior,
-    });
-  };
-
   const applyIndexImmediately = (nextIndex: number) => {
     const safeIndex = Math.max(0, Math.min(works.length - 1, nextIndex));
 
@@ -304,7 +344,11 @@ export default function ProjectsPage() {
   };
 
   const animateTo = (nextIndex: number) => {
-    if (nextIndex < 0 || nextIndex >= works.length || nextIndex === currentIndex) {
+    if (
+      nextIndex < 0 ||
+      nextIndex >= works.length ||
+      nextIndex === currentIndex
+    ) {
       return;
     }
 
@@ -412,24 +456,22 @@ export default function ProjectsPage() {
   }, [isDesktop]);
 
   return (
-    <main className="h-[100dvh] overflow-hidden bg-neutral-100 text-black">
+    <main className={styles.page}>
       <Header />
 
-      <section className="h-[100dvh] px-4 pt-24 pb-6 sm:px-6 md:px-8 lg:px-10 lg:pt-28">
-        <div className="flex h-full w-full min-w-0 flex-col">
-          <div className="mb-4 flex items-center justify-between lg:mb-5">
-            <p className="text-[11px] uppercase tracking-[0.22em] opacity-60 sm:text-xs">
-              Projects
-            </p>
+      <section className={styles.section}>
+        <div className={styles.inner}>
+          <div className={styles.topbar}>
+            <p className={styles.topbarLabel}>Projects</p>
 
-            <p className="text-[11px] uppercase tracking-[0.18em] opacity-50 sm:text-xs">
+            <p className={styles.topbarCount}>
               {currentWork.step} · {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(works.length).padStart(2, "0")}
             </p>
           </div>
 
-          <div className="relative mb-4 xl:hidden">
-            <div className="flex flex-wrap items-center gap-2 overflow-hidden">
+          <div className={styles.mobileCategoryWrap}>
+            <div className={styles.mobileCategoryRow}>
               {mobilePrimaryWorks.map((work, index) => {
                 const isActive = index === currentIndex;
 
@@ -438,11 +480,10 @@ export default function ProjectsPage() {
                     key={work.id}
                     type="button"
                     onClick={() => applyIndexImmediately(index)}
-                    className={`shrink-0 rounded-full border px-3 py-2 text-[11px] uppercase tracking-[0.16em] transition sm:text-xs ${
-                      isActive
-                        ? "border-black bg-black text-white"
-                        : "border-black/10 bg-white text-black hover:bg-black hover:text-white"
-                    }`}
+                    className={cn(
+                      styles.mobileCategoryChip,
+                      isActive && styles.mobileCategoryChipActive
+                    )}
                   >
                     {work.step} · {work.category}
                   </button>
@@ -453,11 +494,11 @@ export default function ProjectsPage() {
                 <button
                   type="button"
                   onClick={() => setMobileMoreOpen((prev) => !prev)}
-                  className={`shrink-0 rounded-full border px-3 py-2 text-[11px] uppercase tracking-[0.16em] transition sm:text-xs ${
-                    isHiddenWorkActive || mobileMoreOpen
-                      ? "border-black bg-black text-white"
-                      : "border-black/10 bg-white text-black hover:bg-black hover:text-white"
-                  }`}
+                  className={cn(
+                    styles.mobileCategoryChip,
+                    (isHiddenWorkActive || mobileMoreOpen) &&
+                      styles.mobileCategoryChipActive
+                  )}
                 >
                   More
                 </button>
@@ -465,8 +506,8 @@ export default function ProjectsPage() {
             </div>
 
             {mobileMoreOpen && mobileHiddenWorks.length > 0 && (
-              <div className="absolute right-0 top-[calc(100%+0.5rem)] z-20 min-w-[15rem] rounded-[22px] border border-black/10 bg-white/95 p-3 shadow-lg backdrop-blur-sm">
-                <div className="grid gap-2">
+              <div className={styles.mobileMorePanel}>
+                <div className={styles.mobileMoreGrid}>
                   {mobileHiddenWorks.map((work, hiddenIndex) => {
                     const actualIndex = hiddenIndex + MOBILE_PRIMARY_COUNT;
                     const isActive = actualIndex === currentIndex;
@@ -476,16 +517,13 @@ export default function ProjectsPage() {
                         key={work.id}
                         type="button"
                         onClick={() => applyIndexImmediately(actualIndex)}
-                        className={`w-full rounded-[16px] border px-3 py-3 text-left transition ${
-                          isActive
-                            ? "border-black bg-black text-white"
-                            : "border-black/10 bg-white text-black hover:border-black hover:bg-black hover:text-white"
-                        }`}
+                        className={cn(
+                          styles.mobileMoreButton,
+                          isActive && styles.mobileMoreButtonActive
+                        )}
                       >
-                        <p className="text-[10px] uppercase tracking-[0.18em] opacity-60">
-                          {work.step}
-                        </p>
-                        <p className="mt-1 text-sm leading-[1.45]">{work.category}</p>
+                        <p className={styles.mobileMoreStep}>{work.step}</p>
+                        <p className={styles.mobileMoreCategory}>{work.category}</p>
                       </button>
                     );
                   })}
@@ -494,14 +532,12 @@ export default function ProjectsPage() {
             )}
           </div>
 
-          <div className="hidden min-h-0 flex-1 overflow-hidden xl:grid xl:grid-cols-[15rem_minmax(0,1fr)_19rem] xl:gap-8">
-            <aside className="flex h-full flex-col justify-between overflow-hidden rounded-[28px] border border-black/10 bg-white/80 p-4 shadow-sm">
+          <div className={styles.desktopLayout}>
+            <aside className={styles.desktopAside}>
               <div>
-                <p className="mb-4 text-[10px] uppercase tracking-[0.18em] opacity-45">
-                  Category
-                </p>
+                <p className={styles.asideEyebrow}>Category</p>
 
-                <div className="grid gap-2">
+                <div className={styles.desktopCategoryGrid}>
                   {works.map((work, index) => {
                     const isActive = index === currentIndex;
 
@@ -510,89 +546,69 @@ export default function ProjectsPage() {
                         key={work.id}
                         type="button"
                         onClick={() => applyIndexImmediately(index)}
-                        className={`w-full rounded-[20px] border px-3 py-3 text-left transition ${
-                          isActive
-                            ? "border-black bg-black text-white"
-                            : "border-black/10 bg-white text-black hover:border-black hover:bg-black hover:text-white"
-                        }`}
+                        className={cn(
+                          styles.desktopCategoryButton,
+                          isActive && styles.desktopCategoryButtonActive
+                        )}
                       >
-                        <p className="text-[10px] uppercase tracking-[0.18em] opacity-60">
-                          {work.step}
-                        </p>
-                        <p className="mt-1 text-sm leading-[1.5]">{work.category}</p>
+                        <p className={styles.desktopCategoryStep}>{work.step}</p>
+                        <p className={styles.desktopCategoryName}>{work.category}</p>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              <p className="text-[11px] leading-[1.8] opacity-55">
-                메인 세션 3의 더보기 버튼과 같은 기준으로 연결되어 원하는 프로젝트 위치로 바로 이동할 수 있습니다.
+              <p className={styles.asideDescription}>
+                메인 세션 3의 더보기 버튼과 같은 기준으로 연결되어 원하는 프로젝트 위치로
+                바로 이동할 수 있습니다.
               </p>
             </aside>
 
-            <div
-              ref={desktopScrollRef}
-              className="min-h-0 overflow-y-auto pr-2 [scrollbar-gutter:stable] [scrollbar-width:thin]"
-            >
-              <div className="flex min-h-full flex-col">
-                <div className="shrink-0 pb-4">
-                  <p className="mb-3 text-[11px] uppercase tracking-[0.18em] opacity-45">
-                    {currentWork.category}
-                  </p>
-                  <h1
-                    ref={desktopTitleRef}
-                    className="max-w-4xl text-[clamp(1.05rem,2.15vw,2.45rem)] leading-[1.04] tracking-[-0.035em]"
-                  >
+            <div ref={desktopScrollRef} className={styles.desktopContentScroll}>
+              <div className={styles.desktopContentInner}>
+                <div className={styles.desktopTitleWrap}>
+                  <p className={styles.contentEyebrow}>{currentWork.category}</p>
+                  <h1 ref={desktopTitleRef} className={styles.desktopTitle}>
                     {currentWork.title}
                   </h1>
                 </div>
 
-                <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white shadow-sm">
+                <div className={styles.coverFrame}>
                   <button
                     type="button"
                     onClick={() => setModalOpen(true)}
-                    className="flex h-full w-full items-center justify-center overflow-hidden bg-white px-5 py-5 transition hover:shadow-md"
+                    className={styles.coverButton}
                   >
                     <img
                       src={currentWork.cover}
                       alt={currentWork.title}
-                      className="h-auto w-full object-cover"
+                      className={styles.coverImage}
                     />
                   </button>
                 </div>
 
-                <div className="mt-5 grid gap-4 pb-8">
+                <div className={styles.detailBlockGrid}>
                   {currentWork.detailBlocks.map((block) => (
                     <section
                       key={`${currentWork.id}-${block.label}`}
-                      className="rounded-[24px] border border-black/10 bg-white/85 p-5 shadow-sm"
+                      className={styles.detailCard}
                     >
-                      <p className="mb-2 text-[10px] uppercase tracking-[0.18em] opacity-45">
-                        {block.label}
-                      </p>
-                      <h2 className="text-[clamp(1rem,1.4vw,1.45rem)] leading-[1.18] tracking-[-0.02em]">
-                        {block.title}
-                      </h2>
+                      <p className={styles.detailLabel}>{block.label}</p>
+                      <h2 className={styles.detailTitle}>{block.title}</h2>
 
-                      <div className="mt-3 space-y-3">
+                      <div className={styles.detailParagraphs}>
                         {block.paragraphs.map((paragraph) => (
-                          <p
-                            key={paragraph}
-                            className="text-[clamp(0.92rem,0.98vw,1rem)] leading-[1.82] opacity-80"
-                          >
+                          <p key={paragraph} className={styles.detailParagraph}>
                             {paragraph}
                           </p>
                         ))}
                       </div>
 
                       {block.bullets && block.bullets.length > 0 && (
-                        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                        <ul className={styles.detailBulletGrid}>
                           {block.bullets.map((bullet) => (
-                            <li
-                              key={bullet}
-                              className="rounded-[16px] border border-black/10 bg-neutral-50 px-4 py-3 text-sm leading-[1.6] opacity-80"
-                            >
+                            <li key={bullet} className={styles.detailBulletItem}>
                               {bullet}
                             </li>
                           ))}
@@ -604,137 +620,83 @@ export default function ProjectsPage() {
               </div>
             </div>
 
-            <div
-              ref={desktopSideRef}
-              className="flex h-full flex-col justify-between overflow-hidden"
-            >
-              <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white/80 p-5 shadow-sm">
-                <p className="text-[clamp(0.82rem,0.9vw,1rem)] leading-[1.85] opacity-80">
-                  {currentWork.description}
-                </p>
+            <div ref={desktopSideRef} className={styles.desktopInfoColumn}>
+              <div className={styles.infoCard}>
+                <p className={styles.infoDescription}>{currentWork.description}</p>
 
-                <div className="mt-6 grid gap-5">
-                  <div>
-                    <p className="mb-2 text-[10px] uppercase tracking-[0.18em] opacity-50">
-                      Tools
-                    </p>
-                    <ul className="space-y-1 text-[13px] leading-[1.6]">
-                      {currentWork.tools.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-[10px] uppercase tracking-[0.18em] opacity-50">
-                      Techniques
-                    </p>
-                    <ul className="space-y-1 text-[13px] leading-[1.6]">
-                      {currentWork.techniques.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="mb-2 text-[10px] uppercase tracking-[0.18em] opacity-50">
-                      Imagery
-                    </p>
-                    <ul className="space-y-1 text-[13px] leading-[1.6]">
-                      {currentWork.imagery.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
+                <div className={styles.infoGroupGrid}>
+                  {infoGroups.map((group) => (
+                    <div key={group.label} className={styles.infoGroup}>
+                      <p className={styles.infoGroupLabel}>{group.label}</p>
+                      <ul className={styles.infoList}>
+                        {group.items.map((item) => (
+                          <li key={item} className={styles.infoListItem}>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
-              </div>
 
-              <div className="mt-6 shrink-0 rounded-[28px] border border-black/10 bg-white/80 p-5 shadow-sm">
-                <p className="mb-3 text-[10px] uppercase tracking-[0.18em] opacity-50">
-                  Preview
-                </p>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => scrollContentToTop()}
-                    className="rounded-full border border-black/10 bg-white px-4 py-3 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white"
-                  >
-                    Top
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => scrollContentToEnd()}
-                    className="rounded-full border border-black/10 bg-white px-4 py-3 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white"
-                  >
-                    End
-                  </button>
-                </div>
+                <a
+                  href={currentWork.action.href}
+                  target={currentWork.action.openInNewTab ? "_blank" : undefined}
+                  rel={currentWork.action.openInNewTab ? "noreferrer" : undefined}
+                  download={currentWork.action.downloadFileName}
+                  className={styles.viewButton}
+                >
+                  {currentWork.action.label}
+                </a>
               </div>
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col xl:hidden">
-            <div className="mb-4 shrink-0">
-              <p className="mb-3 text-[11px] uppercase tracking-[0.18em] opacity-45">
-                {currentWork.category}
-              </p>
-              <h1
-                ref={mobileTitleRef}
-                className="max-w-4xl text-[clamp(1.2rem,4vw,1.8rem)] leading-[1.06] tracking-[-0.035em]"
-              >
+          <div className={styles.mobileLayout}>
+            <div className={styles.mobileTitleWrap}>
+              <p className={styles.contentEyebrow}>{currentWork.category}</p>
+              <h1 ref={mobileTitleRef} className={styles.mobileTitle}>
                 {currentWork.title}
               </h1>
             </div>
 
-            <div
-              ref={mobileScrollRef}
-              className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:thin]"
-            >
-              <div className="flex min-h-full flex-col pb-6">
-                <div className="overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-sm">
+            <div ref={mobileScrollRef} className={styles.mobileContentScroll}>
+              <div className={styles.mobileContentInner}>
+                <div className={styles.mobileCoverFrame}>
                   <button
                     type="button"
                     onClick={() => setModalOpen(true)}
-                    className="flex h-full w-full items-center justify-center overflow-hidden bg-white px-3 py-3"
+                    className={styles.coverButton}
                   >
                     <img
                       src={currentWork.cover}
                       alt={currentWork.title}
-                      className="h-auto w-full object-cover"
+                      className={styles.coverImage}
                     />
                   </button>
                 </div>
 
-                <div className="mt-4 grid gap-4">
+                <div className={styles.mobileDetailGrid}>
                   {currentWork.detailBlocks.map((block) => (
                     <section
                       key={`${currentWork.id}-mobile-${block.label}`}
-                      className="rounded-[22px] border border-black/10 bg-white/85 p-4 shadow-sm"
+                      className={styles.mobileDetailCard}
                     >
-                      <p className="mb-2 text-[10px] uppercase tracking-[0.18em] opacity-45">
-                        {block.label}
-                      </p>
-                      <h2 className="text-[1rem] leading-[1.2] tracking-[-0.02em]">
-                        {block.title}
-                      </h2>
+                      <p className={styles.detailLabel}>{block.label}</p>
+                      <h2 className={styles.mobileDetailTitle}>{block.title}</h2>
 
-                      <div className="mt-3 space-y-3">
+                      <div className={styles.detailParagraphs}>
                         {block.paragraphs.map((paragraph) => (
-                          <p key={paragraph} className="text-sm leading-[1.82] opacity-80">
+                          <p key={paragraph} className={styles.mobileDetailParagraph}>
                             {paragraph}
                           </p>
                         ))}
                       </div>
 
                       {block.bullets && block.bullets.length > 0 && (
-                        <ul className="mt-4 grid gap-2">
+                        <ul className={styles.mobileDetailBulletGrid}>
                           {block.bullets.map((bullet) => (
-                            <li
-                              key={bullet}
-                              className="rounded-[14px] border border-black/10 bg-neutral-50 px-3 py-3 text-sm leading-[1.6] opacity-80"
-                            >
+                            <li key={bullet} className={styles.mobileDetailBulletItem}>
                               {bullet}
                             </li>
                           ))}
@@ -746,138 +708,113 @@ export default function ProjectsPage() {
               </div>
             </div>
 
-            <div
-              ref={mobileInfoRef}
-              className="mt-4 shrink-0 rounded-[24px] border border-black/10 bg-white/80 p-4 shadow-sm"
-            >
-              <p className="text-sm leading-[1.85] opacity-80">{currentWork.description}</p>
+            <div ref={mobileInfoRef} className={styles.mobileInfoCard}>
+              <p className={styles.mobileInfoDescription}>{currentWork.description}</p>
 
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollContentToTop()}
-                  className="rounded-full border border-black/10 bg-white px-4 py-3 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white"
-                >
-                  Top
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => scrollContentToEnd()}
-                  className="rounded-full border border-black/10 bg-white px-4 py-3 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white"
-                >
-                  End
-                </button>
+              <div className={styles.mobileInfoGroupGrid}>
+                {infoGroups.map((group) => (
+                  <div key={group.label} className={styles.infoGroup}>
+                    <p className={styles.infoGroupLabel}>{group.label}</p>
+                    <ul className={styles.infoList}>
+                      {group.items.map((item) => (
+                        <li key={item} className={styles.infoListItem}>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
+
+              <a
+                href={currentWork.action.href}
+                target={currentWork.action.openInNewTab ? "_blank" : undefined}
+                rel={currentWork.action.openInNewTab ? "noreferrer" : undefined}
+                download={currentWork.action.downloadFileName}
+                className={styles.viewButton}
+              >
+                {currentWork.action.label}
+              </a>
             </div>
           </div>
 
-          <div className="mt-4 flex shrink-0 items-center justify-between">
-            <button
-              type="button"
-              onClick={() => animateTo(currentIndex - 1)}
-              className="rounded-full border border-black/10 px-3 py-2 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white sm:px-4 sm:text-xs"
-            >
-              Prev
-            </button>
+          <div className={styles.bottomNavigation}>
+            <div className={styles.bottomNavigationGroup}>
+              <button
+                type="button"
+                onClick={() => animateTo(currentIndex - 1)}
+                className={styles.bottomNavigationButton}
+              >
+                Prev
+              </button>
 
-            <button
-              type="button"
-              onClick={() => animateTo(currentIndex + 1)}
-              className="rounded-full border border-black/10 px-3 py-2 text-[11px] uppercase tracking-[0.18em] transition hover:bg-black hover:text-white sm:px-4 sm:text-xs"
-            >
-              Next
-            </button>
+              <button
+                type="button"
+                onClick={() => animateTo(currentIndex + 1)}
+                className={styles.bottomNavigationButton}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-[70] bg-black/70 px-4 py-6 backdrop-blur-sm md:px-8">
-          <div className="mx-auto flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-[28px] bg-white text-black shadow-2xl">
-            <div className="flex items-center justify-between border-b border-black/10 px-5 py-4 md:px-6">
-              <p className="text-xs uppercase tracking-[0.18em] opacity-60">
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalPanel}>
+            <div className={styles.modalHeader}>
+              <p className={styles.modalMeta}>
                 {currentWork.step} · {currentWork.category}
               </p>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-xs uppercase tracking-[0.18em]"
+                className={styles.modalCloseButton}
               >
                 Close
               </button>
             </div>
 
-            <div className="overflow-y-auto px-5 py-5 md:px-6 md:py-6">
-              <h2 className="text-2xl tracking-[-0.03em] md:text-4xl">
-                {currentWork.title}
-              </h2>
+            <div className={styles.modalBody}>
+              <h2 className={styles.modalTitle}>{currentWork.title}</h2>
 
-              <p className="mt-4 text-sm leading-[1.9] opacity-80 md:text-base">
-                {currentWork.description}
-              </p>
+              <p className={styles.modalDescription}>{currentWork.description}</p>
 
-              <div className="mt-8 grid gap-6 md:grid-cols-3">
-                <div>
-                  <p className="mb-2 text-xs uppercase tracking-[0.18em] opacity-50">
-                    Tools
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    {currentWork.tools.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <p className="mb-2 text-xs uppercase tracking-[0.18em] opacity-50">
-                    Techniques
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    {currentWork.techniques.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <p className="mb-2 text-xs uppercase tracking-[0.18em] opacity-50">
-                    Imagery
-                  </p>
-                  <ul className="space-y-1 text-sm">
-                    {currentWork.imagery.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
+              <div className={styles.modalInfoGrid}>
+                {infoGroups.map((group) => (
+                  <div key={group.label}>
+                    <p className={styles.modalInfoLabel}>{group.label}</p>
+                    <ul className={styles.modalInfoList}>
+                      {group.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
 
-              <div className="mt-8 grid gap-4">
+              <div className={styles.modalDetailGrid}>
                 {currentWork.detailBlocks.map((block) => (
                   <section
                     key={`${currentWork.id}-modal-${block.label}`}
-                    className="rounded-[22px] border border-black/10 bg-neutral-50 p-4"
+                    className={styles.modalDetailCard}
                   >
-                    <p className="mb-2 text-xs uppercase tracking-[0.18em] opacity-50">
-                      {block.label}
-                    </p>
-                    <h3 className="text-lg tracking-[-0.02em]">{block.title}</h3>
+                    <p className={styles.modalDetailLabel}>{block.label}</p>
+                    <h3 className={styles.modalDetailTitle}>{block.title}</h3>
 
-                    <div className="mt-3 space-y-3">
+                    <div className={styles.modalDetailParagraphs}>
                       {block.paragraphs.map((paragraph) => (
-                        <p key={paragraph} className="text-sm leading-[1.9] opacity-80">
+                        <p key={paragraph} className={styles.modalDetailParagraph}>
                           {paragraph}
                         </p>
                       ))}
                     </div>
 
                     {block.bullets && block.bullets.length > 0 && (
-                      <ul className="mt-4 grid gap-2 md:grid-cols-2">
+                      <ul className={styles.modalDetailBulletGrid}>
                         {block.bullets.map((bullet) => (
-                          <li
-                            key={bullet}
-                            className="rounded-[14px] border border-black/10 bg-white px-3 py-3 text-sm leading-[1.6]"
-                          >
+                          <li key={bullet} className={styles.modalDetailBulletItem}>
                             {bullet}
                           </li>
                         ))}

@@ -656,12 +656,12 @@ export default function IntroPage() {
       >
         <div className="sticky top-0 flex h-[100svh] items-center justify-center px-6 md:px-10">
           <div ref={section5ContentRef} className={`${styles.introSectionCopy} text-center`}>
-            <p className="mb-3 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
+            <p className="mb-30 text-xs uppercase tracking-[0.22em] text-black/45 md:text-sm">
               Section 05 · Contact
             </p>
-            <h2 className={`text-[10vw] leading-[0.95] tracking-[-0.06em] md:text-[4.6vw] ${styles.IntroSection5Email}`}>
+            {/* <h2 className={`text-[10vw] leading-[0.95] tracking-[-0.06em] md:text-[4.6vw] ${styles.IntroSection5Email}`}>
               eunsuo@naver.com
-            </h2>
+            </h2> */}
             <p className="mt-5 text-sm leading-[1.9] text-black/72 md:text-lg">
               Original thoughts, open structure, ongoing design work.
             </p>

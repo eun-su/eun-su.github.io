@@ -93,7 +93,7 @@
   border: 1px solid color-mix(in srgb, var(--page-line) 80%, transparent);
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--page-card) 92%, white);
-  color: #aaaaaa;
+  color: var(--page-text-soft);
   font-size: 0.82rem;
   line-height: 1;
   letter-spacing: 0.01em;
@@ -166,10 +166,7 @@
 
 .modalOverlay {
   position: fixed;
-  top: clamp(4.8rem, 6vw, 5.9rem);
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   z-index: 58;
   display: flex;
   align-items: stretch;
@@ -192,7 +189,7 @@
   display: flex;
   flex-direction: column;
   width: min(100%, 118rem);
-  height: 100%;
+  height: calc(100dvh - 5.9rem);
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--page-line) 88%, transparent);
   border-radius: 1.8rem;
@@ -278,10 +275,31 @@
   letter-spacing: -0.03em;
 }
 
+.modalTagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.modalTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--page-line) 80%, transparent);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--page-card) 94%, white);
+  color: var(--page-text-soft);
+  font-size: 0.82rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .modalSection {
   margin-top: 1.2rem;
   display: grid;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .modalParagraphs {
@@ -292,8 +310,57 @@
     margin: 0;
     color: var(--page-text-soft);
     font-size: 0.95rem;
-    line-height: 1.78;
+    line-height: 1;
   }
+}
+
+.modalFigure {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.modalImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--page-line) 76%, transparent);
+  background: color-mix(in srgb, var(--page-card) 94%, white);
+}
+
+.modalCaption {
+  color: var(--page-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.modalGallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.modalPlaceholder {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 1rem;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--page-line) 76%, transparent);
+  background:
+    linear-gradient(135deg, rgba(83, 118, 168, 0.94), rgba(124, 148, 195, 0.82)),
+    radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.2), transparent 36%);
+}
+
+.modalPlaceholderLabel {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.78rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .modalFooter {
@@ -403,7 +470,7 @@
 
 @media (max-width: 767px) {
   .title {
-    font-size: clamp(1.18rem, 5vw, 1.55rem);
+    font-size: clamp(1.45rem, 5vw, 2rem);
   }
 
   .card {
@@ -433,11 +500,12 @@
   }
 
   .modalOverlay {
-    top: 4.55rem;
     padding: 1rem;
   }
 
   .modalDialog {
+    height: calc(100dvh - 4.55rem - 1rem);
+    margin-top: 4.55rem;
     border-radius: 1.35rem;
   }
 
@@ -447,6 +515,17 @@
 
   .modalBody {
     padding: 1rem 0.95rem 1.1rem;
+  }
+
+  .modalTag {
+    min-height: 1.85rem;
+    padding: 0.45rem 0.68rem;
+    font-size: 0.76rem;
+  }
+
+  .modalGallery {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .modalFooter {

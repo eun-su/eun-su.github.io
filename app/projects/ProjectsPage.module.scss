@@ -1,0 +1,658 @@
+.page {
+  height: 100dvh;
+  overflow: hidden;
+  background: #f5f5f5;
+  color: #111111;
+}
+
+.section {
+  height: 100dvh;
+  padding: 6rem 1rem 1.5rem;
+}
+
+.inner {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.topbarLabel,
+.topbarCount,
+.contentEyebrow,
+.asideEyebrow,
+.detailLabel,
+.infoGroupLabel,
+.modalMeta,
+.modalInfoLabel,
+.modalDetailLabel,
+.desktopCategoryStep,
+.mobileMoreStep {
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.topbarLabel {
+  opacity: 0.6;
+}
+
+.topbarCount {
+  opacity: 0.5;
+}
+
+.mobileCategoryWrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.mobileCategoryRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.mobileCategoryChip,
+.desktopCategoryButton,
+.bottomNavigationButton,
+.modalCloseButton {
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  background: #ffffff;
+  color: #111111;
+  transition:
+    background-color 0.24s ease,
+    color 0.24s ease,
+    border-color 0.24s ease,
+    transform 0.24s ease;
+}
+
+.mobileCategoryChip {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mobileCategoryChip:hover,
+.desktopCategoryButton:hover,
+.bottomNavigationButton:hover,
+.modalCloseButton:hover,
+.mobileMoreButton:hover,
+.viewButton:hover {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.mobileCategoryChipActive,
+.desktopCategoryButtonActive,
+.mobileMoreButtonActive {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.mobileMorePanel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 20;
+  min-width: 15rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 1.375rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 40px rgba(17, 17, 17, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.mobileMoreGrid,
+.desktopCategoryGrid,
+.detailBlockGrid,
+.mobileDetailGrid,
+.modalDetailGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.mobileMoreButton,
+.detailCard,
+.mobileDetailCard,
+.mobileInfoCard,
+.infoCard,
+.desktopAside,
+.modalDetailCard {
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 25px rgba(17, 17, 17, 0.06);
+}
+
+.mobileMoreButton {
+  width: 100%;
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  transition:
+    background-color 0.24s ease,
+    color 0.24s ease,
+    border-color 0.24s ease;
+}
+
+.mobileMoreStep,
+.desktopCategoryStep,
+.detailLabel,
+.infoGroupLabel,
+.modalDetailLabel,
+.modalInfoLabel,
+.contentEyebrow,
+.asideEyebrow {
+  opacity: 0.5;
+}
+
+.mobileMoreCategory,
+.desktopCategoryName {
+  margin-top: 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.desktopLayout {
+  display: none;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.desktopAside {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  padding: 1rem;
+}
+
+.asideEyebrow {
+  margin-bottom: 1rem;
+}
+
+.desktopCategoryGrid {
+  gap: 0.5rem;
+}
+
+.desktopCategoryButton {
+  width: 100%;
+  border-radius: 1.25rem;
+  padding: 0.9rem 1rem;
+  text-align: left;
+}
+
+.asideDescription {
+  font-size: 0.6875rem;
+  line-height: 1.8;
+  opacity: 0.55;
+}
+
+.desktopContentScroll,
+.mobileContentScroll,
+.modalBody {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.desktopContentScroll {
+  padding-right: 0.5rem;
+  scrollbar-gutter: stable;
+}
+
+.desktopContentInner,
+.mobileContentInner {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.desktopTitleWrap {
+  flex-shrink: 0;
+  padding-bottom: 1rem;
+}
+
+.contentEyebrow {
+  margin-bottom: 0.75rem;
+}
+
+.desktopTitle {
+  max-width: 64rem;
+  font-size: clamp(1.05rem, 2.15vw, 2.45rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.coverFrame,
+.mobileCoverFrame {
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 1.75rem;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(17, 17, 17, 0.06);
+}
+
+.coverButton {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #ffffff;
+  padding: 1.25rem;
+  transition: box-shadow 0.24s ease;
+}
+
+.coverButton:hover {
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.12);
+}
+
+.coverImage {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.detailBlockGrid {
+  padding: 1.25rem 0 2rem;
+}
+
+.detailCard,
+.mobileDetailCard,
+.modalDetailCard {
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+}
+
+.detailTitle {
+  font-size: clamp(1rem, 1.4vw, 1.45rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.mobileDetailTitle {
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.modalDetailTitle {
+  font-size: 1.125rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.detailParagraphs,
+.modalDetailParagraphs {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.detailParagraph {
+  font-size: clamp(0.92rem, 0.98vw, 1rem);
+  line-height: 1.82;
+  opacity: 0.8;
+}
+
+.mobileDetailParagraph,
+.modalDetailParagraph {
+  font-size: 0.875rem;
+  line-height: 1.82;
+  opacity: 0.8;
+}
+
+.detailBulletGrid,
+.mobileDetailBulletGrid,
+.modalDetailBulletGrid {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.detailBulletGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detailBulletItem,
+.mobileDetailBulletItem,
+.modalDetailBulletItem {
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  background: #fafafa;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.detailBulletItem {
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.mobileDetailBulletItem,
+.modalDetailBulletItem {
+  border-radius: 0.875rem;
+  padding: 0.8rem 0.95rem;
+}
+
+.desktopInfoColumn {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.infoCard,
+.mobileInfoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: 1.75rem;
+}
+
+.infoCard {
+  height: 100%;
+  padding: 1.25rem;
+}
+
+.mobileInfoCard {
+  margin-top: 1rem;
+  flex-shrink: 0;
+  padding: 1rem;
+}
+
+.infoDescription {
+  font-size: clamp(0.82rem, 0.9vw, 1rem);
+  line-height: 1.85;
+  opacity: 0.8;
+}
+
+.mobileInfoDescription {
+  font-size: 0.875rem;
+  line-height: 1.85;
+  opacity: 0.8;
+}
+
+.infoGroupGrid,
+.mobileInfoGroupGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.infoGroup {
+  min-width: 0;
+}
+
+.infoList,
+.modalInfoList {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.infoList {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.infoListItem {
+  word-break: keep-all;
+}
+
+.viewButton {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    background-color 0.24s ease,
+    color 0.24s ease,
+    border-color 0.24s ease;
+}
+
+.mobileLayout {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.mobileTitleWrap {
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.mobileTitle {
+  max-width: 64rem;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+.mobileContentScroll {
+  padding-right: 0.25rem;
+}
+
+.mobileContentInner {
+  padding-bottom: 1.5rem;
+}
+
+.mobileCoverFrame {
+  border-radius: 1.5rem;
+}
+
+.mobileDetailGrid {
+  margin-top: 1rem;
+}
+
+.bottomNavigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-shrink: 0;
+}
+
+.bottomNavigationGroup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.bottomNavigationButton {
+  min-width: 5.75rem;
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  padding: 1.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.modalPanel {
+  display: flex;
+  max-height: 100%;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.modalCloseButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.modalBody {
+  padding: 1.25rem;
+}
+
+.modalTitle {
+  font-size: 2rem;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.modalDescription {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  opacity: 0.8;
+}
+
+.modalInfoGrid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.modalInfoLabel {
+  margin-bottom: 0.5rem;
+}
+
+.modalInfoList {
+  font-size: 0.875rem;
+}
+
+.modalDetailGrid {
+  margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .topbarLabel,
+  .topbarCount,
+  .mobileCategoryChip,
+  .bottomNavigationButton {
+    font-size: 0.75rem;
+  }
+
+  .detailBulletGrid,
+  .modalDetailBulletGrid,
+  .modalInfoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+
+  .modalOverlay {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+
+  .modalHeader,
+  .modalBody {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .modalTitle {
+    font-size: 2.5rem;
+  }
+
+  .modalDescription {
+    font-size: 1rem;
+  }
+
+  .modalInfoGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+    padding-top: 7rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .mobileCategoryWrap,
+  .mobileLayout {
+    display: none;
+  }
+
+  .desktopLayout {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr) 19rem;
+    gap: 2rem;
+  }
+
+  .bottomNavigation {
+    margin-top: 1.25rem;
+  }
+}
