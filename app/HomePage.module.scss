@@ -43,6 +43,20 @@
   background: var(--page-bg);
 }
 
+.section:global(#intro) {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+
+  > .sectionInner {
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 0.8rem;
+  }
+}
+
 .sectionInner {
   position: relative;
   width: 100%;
